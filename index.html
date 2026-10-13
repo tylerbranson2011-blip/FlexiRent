@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d10">
+  <meta name="description" content="Flexi Rent: find vehicles and trailers for your next trip, move, or project.">
+  <title>Flexi Rent | Rent the ride. Own the adventure.</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="announcement"><span class="pulse"></span> THE RENTAL MARKETPLACE BUILT FOR THE WAY YOU MOVE</div>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="Flexi Rent home"><span class="brand-mark">F</span><span>FLEXI<span class="accent">RENT</span></span></a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="#browse">Explore</a><a href="#how">How it works</a><a href="#list">List your ride</a>
+    </nav>
+    <button class="button button-ghost header-action" id="listTop">＋ List your vehicle</button>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-line"></span> YOUR NEXT ADVENTURE STARTS HERE</div>
+        <h1>RENT THE RIDE.<br><span>OWN THE ADVENTURE.</span></h1>
+        <p>From weekend wheels to work-ready trailers, find the right ride for whatever life has planned.</p>
+        <div class="hero-actions"><a class="button button-primary" href="#browse">Find your ride <span>↗</span></a><a class="text-link" href="#how">How Flexi Rent works <span>→</span></a></div>
+        <div class="hero-stats"><div><strong>ALL KINDS</strong><span>of wheels</span></div><i></i><div><strong>COAST TO COAST</strong><span>across the US</span></div><i></i><div><strong>YOUR TERMS</strong><span>rent or list</span></div></div>
+      </div>
+      <div class="hero-art" aria-label="Illustration of a pickup truck and trailer">
+        <div class="art-glow"></div><div class="art-tag tag-top">READY WHEN YOU ARE <b>↗</b></div>
+        <svg class="truck-art" viewBox="0 0 700 360" role="img" aria-label="Stylized pickup truck towing a trailer">
+          <defs><linearGradient id="truckPaint" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff623e"/><stop offset="1" stop-color="#d92e21"/></linearGradient><linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8dd7e6"/><stop offset="1" stop-color="#263d4b"/></linearGradient></defs>
+          <ellipse cx="360" cy="302" rx="300" ry="22" fill="#000" opacity=".45"/>
+          <!-- trailer -->
+          <path d="M465 139 L625 139 L654 264 L466 264 Z" fill="#d7dce1" stroke="#f5f7fa" stroke-width="5"/>
+          <path d="M482 158 L608 158 L625 234 L482 234 Z" fill="#252a30"/>
+          <path d="M489 164 L606 164 L613 192 L489 192 Z" fill="#39434c"/>
+          <path d="M478 264 L657 264" stroke="#ff633f" stroke-width="8"/>
+          <path d="M462 256 L433 274 L466 274" fill="none" stroke="#c9d0d7" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="529" cy="278" r="27" fill="#101317" stroke="#5a626c" stroke-width="8"/><circle cx="529" cy="278" r="10" fill="#cbd2da"/>
+          <!-- truck body -->
+          <path d="M64 190 L88 149 Q98 133 120 133 L249 133 Q275 133 294 157 L331 202 L426 209 Q447 211 453 232 L459 267 L54 267 L54 221 Q54 199 64 190Z" fill="url(#truckPaint)" stroke="#ff876e" stroke-width="4"/>
+          <path d="M111 143 L241 143 Q260 143 275 162 L300 196 L112 196 Z" fill="url(#glass)" stroke="#252b32" stroke-width="5"/>
+          <path d="M252 145 L274 164 L297 196 L260 196 L260 145Z" fill="#16252e" opacity=".7"/>
+          <path d="M65 213 L111 213 L111 263 L62 263Z" fill="#b7251e"/>
+          <path d="M314 209 L412 216 L433 236 L315 236Z" fill="#ef4c30"/>
+          <rect x="322" y="218" width="88" height="8" rx="4" fill="#ff9c83" opacity=".8"/>
+          <path d="M60 247 L102 247" stroke="#ffd2c8" stroke-width="7" stroke-linecap="round"/>
+          <rect x="419" y="234" width="31" height="16" rx="5" fill="#ffdb83"/>
+          <circle cx="145" cy="267" r="40" fill="#111418" stroke="#555e68" stroke-width="9"/><circle cx="145" cy="267" r="20" fill="#cdd4dc"/><circle cx="145" cy="267" r="8" fill="#737d88"/>
+          <circle cx="367" cy="267" r="40" fill="#111418" stroke="#555e68" stroke-width="9"/><circle cx="367" cy="267" r="20" fill="#cdd4dc"/><circle cx="367" cy="267" r="8" fill="#737d88"/>
+          <path d="M85 208 L102 208" stroke="#ffc0b1" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div class="art-tag tag-bottom"><span class="tag-icon">✦</span><span><b>More freedom.</b><small>Less hassle.</small></span></div>
+        <div class="art-number">FR / 001</div>
+      </div>
+      <div class="hero-bottom-line"><span>VEHICLES</span><span>TRAILERS</span><span>RV & CAMPERS</span><span>AND MORE TO COME</span></div>
+    </section>
+
+    <section class="search-section" id="browse">
+      <div class="section-heading"><div><div class="eyebrow">FIND YOUR NEXT RIDE</div><h2>What are you looking for?</h2></div><span class="result-note">SAMPLE LISTINGS · DEMO MODE</span></div>
+      <form class="search-panel" id="searchForm">
+        <label class="search-field"><span>LOCATION</span><div class="input-wrap"><span>⌖</span><input id="location" placeholder="City or ZIP code" autocomplete="postal-code"></div></label>
+        <label class="search-field"><span>RENTAL TYPE</span><div class="input-wrap"><span>▦</span><select id="category"><option value="all">All vehicles & trailers</option><option value="car">Cars</option><option value="truck">Trucks</option><option value="trailer">Trailers</option><option value="rv">RVs & campers</option></select></div></label>
+        <label class="search-field"><span>MAX PRICE / DAY</span><div class="input-wrap"><span>$</span><select id="price"><option value="9999">Any price</option><option value="50">$50</option><option value="100">$100</option><option value="150">$150</option><option value="250">$250</option></select></div></label>
+        <button class="button button-primary search-button" type="submit">Search <span>⌕</span></button>
+      </form>
+      <div class="category-row" id="categoryPills" aria-label="Filter by category">
+        <button class="category-pill active" data-category="all"><span>✦</span> All rides</button>
+        <button class="category-pill" data-category="car"><span>🚘</span> Cars</button>
+        <button class="category-pill" data-category="truck"><span>🛻</span> Trucks</button>
+        <button class="category-pill" data-category="trailer"><span>▰</span> Trailers</button>
+        <button class="category-pill" data-category="rv"><span>⌂</span> RVs & campers</button>
+      </div>
+      <div class="listing-toolbar"><div><h3>Ready when you are.</h3><p id="resultsText">Hand-picked examples to show you how Flexi Rent will work.</p></div><label class="sort-control">SORT BY <select id="sort"><option value="recommended">Recommended</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select></label></div>
+      <div class="listing-grid" id="listingGrid"></div>
+      <div class="empty-state hidden" id="emptyState"><div>⌕</div><h3>No rides found</h3><p>Try another category, location, or price limit.</p><button class="button button-ghost" id="resetFilters">Reset filters</button></div>
+      <p class="demo-disclaimer">These are fictional sample listings for the prototype. No vehicle is currently available to book.</p>
+    </section>
+
+    <section class="how-section" id="how">
+      <div class="eyebrow">STRAIGHTFORWARD FROM START TO FINISH</div><h2>Good rides. Simple plans.</h2>
+      <div class="steps-grid"><article><span class="step-no">01</span><div class="step-icon">⌕</div><h3>Find your fit</h3><p>Search vehicles and trailers by type, location, and budget.</p></article><article><span class="step-no">02</span><div class="step-icon">▤</div><h3>Choose how to book</h3><p>Request a booking online or contact the owner directly.</p></article><article><span class="step-no">03</span><div class="step-icon">↗</div><h3>Hit the road</h3><p>Confirm the details, agree on the handoff, and get moving.</p></article></div>
+    </section>
+
+    <section class="owner-cta" id="list">
+      <div><div class="eyebrow">GOT SOMETHING WITH WHEELS?</div><h2>Let your ride<br>earn its keep.</h2><p>List your vehicle or trailer and connect with people who need it.</p><small>Planned listing subscription: <b>$9.99/month</b></small></div>
+      <button class="button button-light" id="listBottom">I'm ready to list <span>↗</span></button>
+      <div class="cta-decoration">FR<span>+</span></div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><a class="brand" href="#"><span class="brand-mark">F</span><span>FLEXI<span class="accent">RENT</span></span></a><span>More freedom. Less hassle.</span><span>© <span id="year"></span> Flexi Rent · Prototype</span></footer>
+
+  <div class="modal-backdrop hidden" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <div class="detail-modal"><button class="modal-close" id="closeModal" aria-label="Close details">×</button><div id="detailContent"></div></div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
