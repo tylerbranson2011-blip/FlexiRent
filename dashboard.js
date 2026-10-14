@@ -66,8 +66,8 @@
     const { data: listings, error: loadError } =
       await client
         .from("listings")
-        .select("id,title,category,price_per_day,status")
-        .eq("owner_id", data.user.id)
+   .select("id,title,category,price_per_day,status,image_url")
+     .eq("owner_id", data.user.id)
         .order("created_at", { ascending: false });
 
     if (loadError) {
