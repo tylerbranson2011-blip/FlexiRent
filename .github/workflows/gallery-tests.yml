@@ -17,6 +17,8 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           for file in *.js tests/*.cjs; do node --check "$file"; done
+      - name: Check photo editor integration
+        run: node tests/photo-editor.test.cjs
       - name: Run behavior checks
         run: node tests/gallery.unit.test.cjs
       - name: Install browser test tools

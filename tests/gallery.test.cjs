@@ -144,11 +144,11 @@ async function main() {
       assert(queries.some(q => q.table === "listings" && q.filters.some(([key, value]) => key === "owner_id" && value === "owner")));
       assert(queries.some(q => q.table === "listing_photos" && q.filters.some(([key, value]) => key === "listing_id" && Array.isArray(value) && !value.includes("other"))));
 
-      // Existing change-photo flow keeps the new cover visible alongside gallery photos.
-      await dashboard.locator('.change-listing-photo[data-id="multi"]').click();
-      await page.locator('input[type=file]').last().setInputFiles({ name: "cover.png", mimeType: "image/png", buffer: Buffer.from("photo") });
-      await page.waitForFunction(() => document.querySelectorAll('#dashboardContent [data-listing-id="multi"] img').length === 4);
-      assert.match(await dashboard.locator('[data-listing-id="multi"] img').first().getAttribute("src"), /photos.test\/owner\//);
+      // The photo editor opens and displays existing photos.
+      await dashboard.locator('.edit-listing-photos[data-id="multi"]').click();
+      await page.waitForFunction(() => document.querySelectorAll('#photoEditorGrid img').length > 0);
+      await page.locator('[aria-label="Close photo editor"]').click();
+      await page.waitForFunction(() => document.querySelector("#photoEditorTitle").closest(".auth-backdrop").hidden);
       await page.locator('[aria-label="Close dashboard"]').click();
 
       // The existing multi-file upload still saves a private draft and ordered photo rows.
@@ -162,7 +162,7 @@ async function main() {
       assert.equal(saved.listing.owner_id, "owner");
       assert.deepEqual(saved.photos.map(p => p.position), [0, 1]);
       assert.equal(saved.listing.image_url, saved.photos[0].image_url);
-      assert.equal(saved.uploads.length, 3);
+      assert.equal(saved.uploads.length, 2);
       await page.locator('[aria-labelledby="listingTitle"] .auth-close').click();
       await page.locator("#myListingsButton").click();
       await page.evaluate(() => supabaseClient.auth.signOut());
