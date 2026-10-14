@@ -24,8 +24,8 @@ async function refresh(){
  if(b.error||r.error){body.textContent=(b.error||r.error).message;return;}
  const blocks=b.data||[],requests=r.data||[];
  const busy=requests.filter(x=>x.status==="approved"||(x.status==="pending"&&new Date(x.expires_at)>new Date()));
- const dates=[...blocks.map(x=>({start:x.start_date,end:x.end_date,label:"Owner blocked"})),...busy.map(x=>({start:x.start_date,end:x.end_date,label:x.status==="approved"?"Reserved":"Pending request"}))];
- body.innerHTML='<h3>Unavailable dates</h3>'+(dates.length?'<ul>'+dates.map(x=>'<li>'+esc(x.start)+' to '+esc(x.end)+' ('+esc(x.label)+')</li>').join("")+'</ul>':'<p>No dates blocked yet.</p>')+
+ const dates=[...blocks.map(x=>({id:x.id,start:x.start_date,end:x.end_date,label:"Owner blocked"})),...busy.map(x=>({start:x.start_date,end:x.end_date,label:x.status==="approved"?"Reserved":"Pending request"}))];
+ body.innerHTML='<h3>Unavailable dates</h3>'+(dates.length?'<ul>'+dates.map(x=>'<li>'+esc(x.start)+' to '+esc(x.end)+' ('+esc(x.label)+')'+(ownerMode&&x.id?' <button type="button" data-unblock="'+esc(x.id)+'" aria-label="Unblock '+esc(x.start)+' to '+esc(x.end)+'">Unblock dates</button>':'')+'</li>').join("")+'</ul>':'<p>No dates blocked yet.</p>')+
  '<form id="bookingForm"><label>Pickup date <input type="date" name="start" required></label><label>Return date <input type="date" name="end" required></label><button class="button button-primary" type="submit">'+(ownerMode?"Block dates":"Request booking")+'</button></form>'+
  (ownerMode?'<h3>Booking requests</h3>'+(requests.length?requests.map(x=>'<div class="booking-request"><p>'+esc(x.start)+' to '+esc(x.end)+' · '+esc(x.status==="pending"&&new Date(x.expires_at)<=new Date()?"expired":x.status)+'</p>'+(x.status==="pending"&&new Date(x.expires_at)>new Date()?'<button data-respond="'+esc(x.id)+'" data-approve="true">Approve</button> <button data-respond="'+esc(x.id)+'" data-approve="false">Decline</button>':'')+'</div>').join(""):'<p>No requests yet.</p>'):'<p>Owners have 24 hours to approve. Unanswered requests expire automatically.</p>');
  const form=body.querySelector("#bookingForm");
@@ -39,6 +39,13 @@ async function refresh(){
  message.textContent=result.error?result.error.message:ownerMode?"Dates blocked.":"Request submitted. Owner has 24 hours to respond.";
  if(!result.error)await refresh();
  });
+ body.querySelectorAll("[data-unblock]").forEach(button=>button.addEventListener("click",async()=>{
+ if(!ownerMode||!confirm("Make these dates available again?"))return;
+ button.disabled=true;
+ const result=await client.rpc("unblock_listing_dates",{p_block:button.dataset.unblock});
+ message.textContent=result.error?"Could not unblock dates: "+result.error.message:"Dates are available again.";
+ await refresh();
+ }));
  body.querySelectorAll("[data-respond]").forEach(button=>button.addEventListener("click",async()=>{
  const result=await client.rpc("respond_booking",{p_request:button.dataset.respond,p_approve:button.dataset.approve==="true"});
  message.textContent=result.error?result.error.message:"Request updated.";
