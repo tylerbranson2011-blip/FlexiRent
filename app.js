@@ -25,7 +25,7 @@ function filteredListings(){
 function render(){
  const items=filteredListings();
  grid.innerHTML=items.map(item=>`<article class="listing-card">
- <div class="listing-image"><img src="${item.image}" alt="${escapeHTML(item.title)}" loading="lazy" onerror="this.style.opacity='.2';this.alt='Sample vehicle image unavailable'"><span class="image-badge">${escapeHTML(item.badge)}</span><button class="favorite" data-favorite="${item.id}" aria-label="Save ${escapeHTML(item.title)} to favorites">♡</button></div>
+ <div class="listing-image"><img src="${item.image}" alt="${escapeHTML(item.title)}" loading="lazy" onerror="this.style.opacity='.2';this.alt='Rental photo unavailable'"><span class="image-badge">${escapeHTML(item.badge)}</span><button class="favorite" data-favorite="${item.id}" aria-label="Save ${escapeHTML(item.title)} to favorites">♡</button></div>
  <div class="listing-info"><div class="listing-category">${escapeHTML(item.categoryLabel)}</div><h4>${escapeHTML(item.title)}</h4><div class="listing-location">⌖ ${escapeHTML(item.location)}</div>
  <div class="listing-meta"><span>◷ ${escapeHTML(item.seats)}</span><span>⚙ ${escapeHTML(item.transmission)}</span></div>
  <div class="listing-bottom"><div class="price"><strong>$${item.price}</strong> <small>/ day</small><div class="price-note">Listed daily rate</div></div><button class="details-button" data-details="${item.id}">View details ↗</button></div></div></article>`).join("");
