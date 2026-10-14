@@ -76,7 +76,8 @@ function openDetails(id){
       </div>
     </div>
   `;
-
+  modal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
   document.getElementById("demoBook").addEventListener("click",()=>showToast("Booking isn't connected yet. Next step: add accounts and a real booking database."));
  document.getElementById("demoContact").addEventListener("click",()=>showToast("Owner messaging isn't connected yet. We'll add it after account setup."));
 }
