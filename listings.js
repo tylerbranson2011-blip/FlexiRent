@@ -162,7 +162,34 @@
     submit.disabled = true;
     message.textContent = "Saving your listing...";
 
-    try {
+    try { 
+      
+      if (photo) {
+        message.textContent = "Uploading your photo...";
+
+        const extension = photo.type === "image/png"
+          ? "png"
+          : photo.type === "image/webp" ? "webp" : "jpg";
+
+        const filePath =
+          `${data.user.id}/${crypto.randomUUID()}.${extension}`;
+
+        const { error: uploadError } = await client.storage
+          .from("listing-images")
+          .upload(filePath, photo, {
+            contentType: photo.type,
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { data: photoData } = client.storage
+          .from("listing-images")
+          .getPublicUrl(filePath);
+
+        listing.image_url = photoData.publicUrl;
+      }
+
       const { error } = await client
         .from("listings")
         .insert(listing);
