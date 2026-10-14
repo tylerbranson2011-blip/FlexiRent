@@ -275,13 +275,22 @@ ${item.status === "published" ? `
       return;
     }
 
+    
     const publishButton = event.target.closest(".publish-listing");
 
     if (publishButton) {
       publishListing(publishButton.dataset.id);
       return;
     }
+
+    const unpublishButton = event.target.closest(".unpublish-listing");
+
+    if (unpublishButton) {
+      unpublishListing(unpublishButton.dataset.id);
+      return;
+    }
   });
+
 
 
   button.addEventListener("click", openDashboard);
