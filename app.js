@@ -58,11 +58,6 @@ document.getElementById("closeModal").addEventListener("click",closeDetails);
 modal.addEventListener("click",e=>{if(e.target===modal)closeDetails();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDetails();});
 
-function listPrompt(){showToast("Owner accounts and the $9.99/month listing plan are on the build roadmap. Nothing is charged in this demo.");}
-document.getElementById("listTop").addEventListener("click",listPrompt);document.getElementById("listBottom").addEventListener("click",listPrompt);
-
-function listPrompt(){showToast("Owner accounts and the $9.99/month listing plan are on the build roadmap. Nothing is charged in this demo.");}
-document.getElementById("listTop").addEventListener("click",listPrompt);document.getElementById("listBottom").addEventListener("click",listPrompt);
 
 document.getElementById("menuToggle").addEventListener("click",()=>{showToast("Use Explore below to browse listings. Mobile navigation will expand in the next pass.");});
 document.getElementById("year").textContent=new Date().getFullYear();
