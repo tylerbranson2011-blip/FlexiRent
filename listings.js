@@ -125,6 +125,26 @@
       return;
     }
 
+    const photo = document.getElementById("rentalPhoto").files[0];
+
+    if (photo) {
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+      ];
+
+      if (!allowedTypes.includes(photo.type)) {
+        message.textContent = "Please choose a JPG, PNG or WebP photo.";
+        return;
+      }
+
+      if (photo.size > 5 * 1024 * 1024) {
+        message.textContent = "Photo must be smaller than 5 MB.";
+        return;
+      }
+    }
+
     const listing = {
       owner_id: data.user.id,
       title: document.getElementById("rentalTitle").value.trim(),
