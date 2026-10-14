@@ -289,6 +289,14 @@ ${item.status === "published" ? `
     openDashboard();
   }
 
+  const photoPicker = document.createElement("input");
+  photoPicker.type = "file";
+  photoPicker.accept = "image/jpeg,image/png,image/webp";
+  photoPicker.hidden = true;
+  document.body.appendChild(photoPicker);
+
+  let photoListingId = null;
+
   content.addEventListener("click", event => {
     const editButton = event.target.closest(".edit-listing");
 
