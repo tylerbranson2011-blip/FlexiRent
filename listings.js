@@ -65,7 +65,7 @@
                placeholder="https://example.com/photo.jpg">
 
         <p id="listingMessage" role="status"></p>
-        <button id="authSubmit" type="submit">
+        <button id="listingSubmit" type="submit">
           Save Listing
         </button>
       </form>
