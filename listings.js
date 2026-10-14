@@ -174,8 +174,14 @@
 
     try { 
       
-      if (photo) {
-        message.textContent = "Uploading your photo...";
+      
+      const uploadedPhotos = [];
+
+      for (let i = 0; i < photos.length; i++) {
+        const photo = photos[i];
+
+        message.textContent =
+          `Uploading photo ${i + 1} of ${photos.length}...`;
 
         const extension = photo.type === "image/png"
           ? "png"
@@ -197,8 +203,17 @@
           .from("listing-images")
           .getPublicUrl(filePath);
 
-        listing.image_url = photoData.publicUrl;
+        uploadedPhotos.push({
+          image_url: photoData.publicUrl,
+          storage_path: filePath,
+          position: i
+        });
       }
+
+      if (uploadedPhotos.length > 0) {
+        listing.image_url = uploadedPhotos[0].image_url;
+      }
+
 
       const { error } = await client
         .from("listings")
