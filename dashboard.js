@@ -105,6 +105,7 @@
   ✏️ Edit Listing
 </button>
 
+<button type="button" class="manage-booking-dates" data-id="${escapeHTML(item.id)}">📅 Availability & Requests</button>
 <button type="button"
   class="edit-listing-photos"
   data-id="${escapeHTML(item.id)}">
@@ -308,6 +309,8 @@ ${item.status === "published" ? `
       return;
     }
 
+    const bookingButton = event.target.closest(".manage-booking-dates");
+    if (bookingButton) { window.FlexiRentBooking?.open(bookingButton.dataset.id,true); return; }
     const photoButton = event.target.closest(".edit-listing-photos");
 
     if (photoButton) {
