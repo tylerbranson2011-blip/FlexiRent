@@ -62,13 +62,12 @@ async function openDetails(id){
 
       <p class="detail-description">
         <b>Important:</b> Rental availability and details
-        must be confirmed with the owner. Online bookings
-        and payments are not yet available.
+        must be confirmed with the owner. Payments are not yet available.
       </p>
 
       <div class="detail-actions">
         <button class="button button-primary" id="demoBook">
-          Booking coming soon
+          Request booking
         </button>
         <button class="button button-ghost" id="demoContact">
           Messaging coming soon
@@ -80,7 +79,7 @@ async function openDetails(id){
   window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image});
   modal.classList.remove("hidden");
   document.body.style.overflow = "hidden";
-  document.getElementById("demoBook").addEventListener("click",()=>showToast("Booking isn't connected yet. Next step: add accounts and a real booking database."));
+  document.getElementById("demoBook").addEventListener("click",()=>window.FlexiRentBooking?.open(item.id));
  document.getElementById("demoContact").addEventListener("click",()=>showToast("Owner messaging isn't connected yet. We'll add it after account setup."));
  try {
   const {data:photos,error}=await window.supabaseClient.from("listing_photos").select("image_url,position").eq("listing_id",item.id).order("position",{ascending:true});
