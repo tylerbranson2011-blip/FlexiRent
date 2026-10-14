@@ -59,3 +59,27 @@ body {
 .owner-cta {
   background: linear-gradient(135deg, #292142, #171129);
 }
+/* Fix owner section text contrast */
+.owner-cta {
+  color: #F5F1FF;
+  border: 1px solid #59467E;
+}
+
+.owner-cta h2 {
+  color: #FFFFFF;
+}
+
+.owner-cta p,
+.owner-cta small {
+  color: #DDD2F3;
+}
+
+.owner-cta .eyebrow {
+  color: #C084FC;
+}
+
+.owner-cta .cta-decoration {
+  color: #A855F7;
+  opacity: 0.12;
+}
+
