@@ -110,3 +110,7 @@ body {
 .photo-editor-actions button:disabled{opacity:.5;cursor:default}
 #photoEditorUpload{display:block;width:100%;margin:8px 0 12px}
 #photoEditorMessage{min-height:1.5em}
+
+/* Keep the photo editor above the listings dashboard */
+.photo-editor-panel{position:relative}
+.auth-backdrop:has(.photo-editor-panel){z-index:10001}
