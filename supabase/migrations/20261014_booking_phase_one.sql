@@ -24,7 +24,7 @@ create index if not exists listing_blocks_listing_dates_idx on public.listing_bl
 alter table public.listing_blocks enable row level security;
 alter table public.booking_requests enable row level security;
 create policy "Read blocks for published or owned listings" on public.listing_blocks for select to anon,authenticated using (exists (select 1 from public.listings l where l.id=listing_id and (l.status='published' or l.owner_id=(select auth.uid()))));
-create policy "Owner reads blocks" on public.listing_blocks for all to authenticated using (owner_id=(select auth.uid()) and exists(select 1 from public.listings l where l.id=listing_id and l.owner_id=(select auth.uid()))) with check (owner_id=(select auth.uid()) and exists(select 1 from public.listings l where l.id=listing_id and l.owner_id=(select auth.uid())));
+-- Block writes are restricted to checked RPCs; direct table writes would bypass overlap checks.
 create policy "Participants read requests" on public.booking_requests for select to authenticated using (renter_id=(select auth.uid()) or exists(select 1 from public.listings l where l.id=listing_id and l.owner_id=(select auth.uid())));
 -- All mutations run through SECURITY DEFINER RPCs with ownership and overlap checks.
 create or replace function public.booking_conflict(p_listing uuid,p_start date,p_end date,p_ignore uuid default null)
@@ -82,3 +82,20 @@ begin
  return n;
 end $$;
 revoke all on function public.expire_booking_requests() from public,anon,authenticated;
+
+-- Unblocking is owner-only. Existing approved bookings are never modified.
+create or replace function public.unblock_listing_dates(p_block uuid)
+returns void language plpgsql security definer set search_path='' as $$
+declare v_listing uuid;
+begin
+ select b.listing_id into v_listing from public.listing_blocks b
+ join public.listings l on l.id=b.listing_id
+ where b.id=p_block and l.owner_id=auth.uid();
+ if v_listing is null then raise exception 'Blocked dates not found or access denied'; end if;
+ perform pg_advisory_xact_lock(hashtextextended(v_listing::text,0));
+ delete from public.listing_blocks b where b.id=p_block and b.listing_id=v_listing
+ and exists(select 1 from public.listings l where l.id=b.listing_id and l.owner_id=auth.uid());
+ if not found then raise exception 'Could not unblock dates'; end if;
+end $$;
+revoke all on function public.unblock_listing_dates(uuid) from public,anon;
+grant execute on function public.unblock_listing_dates(uuid) to authenticated;
