@@ -101,6 +101,76 @@
     `).join("");
   }
 
+  async function editListing(id) {
+    const { data: authData, error: authError } =
+      await client.auth.getUser();
+
+    if (authError || !authData.user) {
+      alert("Please log in again.");
+      return;
+    }
+
+    const { data: listing, error } = await client
+      .from("listings")
+      .select("id,title,description,price_per_day")
+      .eq("id", id)
+      .eq("owner_id", authData.user.id)
+      .single();
+
+    if (error || !listing) {
+      alert("Could not load this listing.");
+      return;
+    }
+
+    const title = prompt("Listing title:", listing.title);
+    if (title === null) return;
+
+    const price = prompt(
+      "Daily rental price ($):",
+      listing.price_per_day
+    );
+    if (price === null) return;
+
+    const description = prompt(
+      "Description:",
+      listing.description || ""
+    );
+    if (description === null) return;
+
+    const amount = Number(price);
+
+    if (!title.trim() || !price.trim() ||
+        !Number.isFinite(amount) || amount <= 0) {
+      alert("Enter a title and a valid price above $0.");
+      return;
+    }
+
+    const { error: saveError } = await client
+      .from("listings")
+      .update({
+        title: title.trim(),
+        price_per_day: amount,
+        description: description.trim()
+      })
+      .eq("id", id)
+      .eq("owner_id", authData.user.id);
+
+    if (saveError) {
+      alert("Save failed: " + saveError.message);
+      return;
+    }
+
+    alert("Listing updated successfully!");
+    openDashboard();
+  }
+
+  content.addEventListener("click", event => {
+    const editButton = event.target.closest(".edit-listing");
+    if (!editButton) return;
+
+    editListing(editButton.dataset.id);
+  });
+
   button.addEventListener("click", openDashboard);
 
   modal.querySelector(".auth-close")
