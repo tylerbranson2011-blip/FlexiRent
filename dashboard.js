@@ -106,6 +106,14 @@ ${item.status === "draft" ? `
   </button>
 ` : ""}
 
+${item.status === "published" ? `
+  <button type="button"
+    class="unpublish-listing"
+    data-id="${escapeHTML(item.id)}">
+    📥 Unpublish Listing
+  </button>
+` : ""}
+
       </div>
     `).join("");
   }
