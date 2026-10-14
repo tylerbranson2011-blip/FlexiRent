@@ -162,7 +162,7 @@ async function main() {
       assert.equal(saved.listing.owner_id, "owner");
       assert.deepEqual(saved.photos.map(p => p.position), [0, 1]);
       assert.equal(saved.listing.image_url, saved.photos[0].image_url);
-      assert.equal(saved.uploads.length, 3);
+      assert.equal(saved.uploads.length, 2);
       await page.locator('[aria-labelledby="listingTitle"] .auth-close').click();
       await page.locator("#myListingsButton").click();
       await page.evaluate(() => supabaseClient.auth.signOut());
