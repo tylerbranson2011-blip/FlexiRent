@@ -52,9 +52,12 @@
     );
   }
 
+  let dashboardRequest=0;
   async function openDashboard() {
+    const request=++dashboardRequest;
     const { data, error } = await client.auth.getUser();
 
+    if(request!==dashboardRequest)return;
     if (error || !data.user) {
       alert("Please log in to view your listings.");
       return;
@@ -70,6 +73,7 @@
      .eq("owner_id", data.user.id)
         .order("created_at", { ascending: false });
 
+    if(request!==dashboardRequest||modal.hidden)return;
     if (loadError) {
       content.textContent = loadError.message;
       return;
@@ -89,20 +93,7 @@
         border-radius:10px;
       ">
       
-        ${item.image_url ? `
-          <img
-            src="${escapeHTML(item.image_url)}"
-            alt="Photo of ${escapeHTML(item.title)}"
-            loading="lazy"
-            style="
-              width:100%;
-              height:190px;
-              object-fit:cover;
-              border-radius:10px;
-              margin-bottom:12px;
-            "
-          >
-        ` : ""}
+        <div class="dashboard-gallery" data-listing-id="${escapeHTML(item.id)}"></div>
 
         <strong>${escapeHTML(item.title)}</strong>
         <p>${escapeHTML(item.category)}</p>
@@ -138,6 +129,10 @@ ${item.status === "published" ? `
 
       </div>
     `).join("");
+    const galleries=[...content.querySelectorAll(".dashboard-gallery")];
+    const mountGalleries=(photos=[],unavailable=false)=>galleries.forEach((gallery,index)=>{const item=listings[index];window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image_url,compact:true,unavailable,photos:photos.filter(photo=>String(photo.listing_id)===String(item.id))})});
+    mountGalleries();
+    try{const {data:photos,error:photoError}=await client.from("listing_photos").select("listing_id,image_url,position").in("listing_id",listings.map(item=>item.id)).order("position",{ascending:true});if(request!==dashboardRequest||modal.hidden)return;mountGalleries(photoError?[]:photos||[],Boolean(photoError))}catch{if(request===dashboardRequest&&!modal.hidden)mountGalleries([],true)}
   }
 
   async function editListing(id) {
@@ -408,11 +403,13 @@ ${item.status === "published" ? `
 
 
 
+  client.auth.onAuthStateChange((_event,session)=>{if(!session?.user){++dashboardRequest;modal.hidden=true;content.replaceChildren()}});
   button.addEventListener("click", openDashboard);
 
   modal.querySelector(".auth-close")
     .addEventListener("click", () => {
-      modal.hidden = true;
+      ++dashboardRequest;
+        modal.hidden = true;
     });
 
   modal.addEventListener("click", event => {
