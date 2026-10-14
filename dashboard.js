@@ -88,6 +88,22 @@
         border:1px solid #343941;
         border-radius:10px;
       ">
+      
+        ${item.image_url ? `
+          <img
+            src="${escapeHTML(item.image_url)}"
+            alt="Photo of ${escapeHTML(item.title)}"
+            loading="lazy"
+            style="
+              width:100%;
+              height:190px;
+              object-fit:cover;
+              border-radius:10px;
+              margin-bottom:12px;
+            "
+          >
+        ` : ""}
+
         <strong>${escapeHTML(item.title)}</strong>
         <p>${escapeHTML(item.category)}</p>
         <p>$${Number(item.price_per_day).toFixed(2)} / day</p>
