@@ -173,6 +173,59 @@ ${item.status === "draft" ? `
     openDashboard();
   }
 
+  async function publishListing(id) {
+    const { data: authData, error: authError } =
+      await client.auth.getUser();
+
+    if (authError || !authData.user) {
+      alert("Please log in again.");
+      return;
+    }
+
+    const { data: listing, error: loadError } = await client
+      .from("listings")
+      .select("id,title,description,city,state,price_per_day,status")
+      .eq("id", id)
+      .eq("owner_id", authData.user.id)
+      .single();
+
+    if (loadError || !listing || listing.status !== "draft") {
+      alert("This draft could not be loaded.");
+      return;
+    }
+
+    if (!listing.title?.trim() ||
+        !listing.description?.trim() ||
+        !listing.city?.trim() ||
+        !listing.state?.trim() ||
+        Number(listing.price_per_day) <= 0) {
+      alert("Complete the title, description, location and price before publishing.");
+      return;
+    }
+
+    const confirmed = confirm(
+      "Publish this rental publicly? Anyone visiting Flexi Rent will be able to see its details and listed price. Bookings and payments are not enabled."
+    );
+
+    if (!confirmed) return;
+
+    const { data: updated, error: saveError } = await client
+      .from("listings")
+      .update({ status: "published" })
+      .eq("id", id)
+      .eq("owner_id", authData.user.id)
+      .eq("status", "draft")
+      .select("id");
+
+    if (saveError || !updated?.length) {
+      alert("Publishing failed. Please try again.");
+      return;
+    }
+
+    alert("Your listing is now published!");
+    openDashboard();
+  }
+
   content.addEventListener("click", event => {
     const editButton = event.target.closest(".edit-listing");
     if (!editButton) return;
