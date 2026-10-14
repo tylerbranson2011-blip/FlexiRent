@@ -215,11 +215,32 @@
       }
 
 
-      const { error } = await client
+      
+      const { data: savedListing, error } = await client
         .from("listings")
-        .insert(listing);
+        .insert(listing)
+        .select("id")
+        .single();
 
       if (error) throw error;
+
+      if (uploadedPhotos.length > 0) {
+        message.textContent = "Saving photo gallery...";
+
+        const photoRecords = uploadedPhotos.map(photo => ({
+          listing_id: savedListing.id,
+          image_url: photo.image_url,
+          storage_path: photo.storage_path,
+          position: photo.position
+        }));
+
+        const { error: photoError } = await client
+          .from("listing_photos")
+          .insert(photoRecords);
+
+        if (photoError) throw photoError;
+      }
+
 
       message.textContent = "Listing saved successfully!";
       form.reset();
