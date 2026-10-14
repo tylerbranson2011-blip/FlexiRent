@@ -54,4 +54,45 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDetails();});
 
 document.getElementById("menuToggle").addEventListener("click",()=>{showToast("Use Explore below to browse listings. Mobile navigation will expand in the next pass.");});
 document.getElementById("year").textContent=new Date().getFullYear();
+loadRealListings();
+async function loadRealListings() {
+  const client = window.supabaseClient;
+
+  if (!client) {
+    resultsText.textContent = "Database connection unavailable.";
+    return;
+  }
+
+  resultsText.textContent = "Loading available rentals...";
+
+  const { data, error } = await client
+    .from("listings")
+    .select("id,title,description,category,city,state,price_per_day,image_url")
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    resultsText.textContent = "Unable to load rentals.";
+    console.error("Listing load failed:", error);
+    return;
+  }
+
+  listings = (data || []).map(item => ({
+    id: item.id,
+    title: item.title || "Untitled rental",
+    category: item.category || "equipment",
+    categoryLabel: item.category || "Rental",
+    location: [item.city, item.state].filter(Boolean).join(", "),
+    price: Number(item.price_per_day) || 0,
+    period: "day",
+    seats: "Details available",
+    transmission: "Ask owner",
+    badge: "AVAILABLE",
+    image: item.image_url || "",
+    description: item.description || "No description provided."
+  }));
+
+  render();
+}
+
 render();
