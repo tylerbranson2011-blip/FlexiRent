@@ -235,6 +235,38 @@ ${item.status === "published" ? `
   }
 
   
+  async function unpublishListing(id) {
+    const { data: authData, error: authError } =
+      await client.auth.getUser();
+
+    if (authError || !authData.user) {
+      alert("Please log in again.");
+      return;
+    }
+
+    const confirmed = confirm(
+      "Unpublish this listing? It will disappear from the public storefront, but you can publish it again later."
+    );
+
+    if (!confirmed) return;
+
+    const { data: updated, error: saveError } = await client
+      .from("listings")
+      .update({ status: "draft" })
+      .eq("id", id)
+      .eq("owner_id", authData.user.id)
+      .eq("status", "published")
+      .select("id");
+
+    if (saveError || !updated?.length) {
+      alert("Unpublishing failed. Please try again.");
+      return;
+    }
+
+    alert("Listing unpublished successfully!");
+    openDashboard();
+  }
+
   content.addEventListener("click", event => {
     const editButton = event.target.closest(".edit-listing");
 
