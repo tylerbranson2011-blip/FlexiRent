@@ -92,6 +92,11 @@
         <p>${escapeHTML(item.category)}</p>
         <p>$${Number(item.price_per_day).toFixed(2)} / day</p>
         <p>Status: ${escapeHTML(item.status)}</p>
+        <button type="button"
+  class="edit-listing"
+  data-id="${escapeHTML(item.id)}">
+  ✏️ Edit Listing
+</button>
       </div>
     `).join("");
   }
