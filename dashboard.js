@@ -97,6 +97,15 @@
   data-id="${escapeHTML(item.id)}">
   ✏️ Edit Listing
 </button>
+
+${item.status === "draft" ? `
+  <button type="button"
+    class="publish-listing"
+    data-id="${escapeHTML(item.id)}">
+    🚀 Publish Listing
+  </button>
+` : ""}
+
       </div>
     `).join("");
   }
