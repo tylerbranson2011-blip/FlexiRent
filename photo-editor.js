@@ -5,6 +5,8 @@ if(!client)return;
 const editor=document.createElement("div");
 editor.className="auth-backdrop";
 editor.hidden=true;
+editor.style.zIndex="2147483647";
+let dashboardBackdrop=null;
 editor.innerHTML=`<div class="auth-panel photo-editor-panel" role="dialog" aria-modal="true" aria-labelledby="photoEditorTitle">
 <button type="button" class="auth-close" aria-label="Close photo editor">×</button>
 <h2 id="photoEditorTitle">Edit Photos</h2>
@@ -19,7 +21,7 @@ document.body.append(editor);
 const grid=editor.querySelector("#photoEditorGrid"),input=editor.querySelector("#photoEditorUpload"),message=editor.querySelector("#photoEditorMessage"),add=editor.querySelector("#photoEditorAdd");
 let current=null,busy=false,photos=[],cover=null,owner=null,sequence=0;
 const valid=url=>{try{return typeof url==="string"&&["https:","http:"].includes(new URL(url).protocol)}catch{return false}};
-function close(){if(busy)return;sequence++;editor.hidden=true;current=null;input.value="";}
+function close(){if(busy)return;sequence++;editor.hidden=true;if(dashboardBackdrop){dashboardBackdrop.hidden=false;dashboardBackdrop=null;}current=null;input.value="";}
 function render(){
 grid.replaceChildren();
 const ordered=[...photos].sort((a,b)=>a.position-b.position);
@@ -46,7 +48,7 @@ if(token!==sequence)return;
 cover=listing.image_url;photos=rows||[];render();
 }
 async function open(id){
-if(busy)return;const token=++sequence;current=id;photos=[];cover=null;message.textContent="Loading photos...";editor.hidden=false;grid.replaceChildren();input.value="";
+if(busy)return;dashboardBackdrop=document.querySelector('[aria-label="Close dashboard"]')?.closest(".auth-backdrop")||null;if(dashboardBackdrop)dashboardBackdrop.hidden=true;const token=++sequence;current=id;photos=[];cover=null;message.textContent="Loading photos...";editor.hidden=false;grid.replaceChildren();input.value="";
 try{const {data,error}=await client.auth.getUser();if(error||!data?.user)throw Error("Please log in first.");owner=data.user.id;await load(id,token);if(token===sequence)message.textContent="";}catch(error){if(token===sequence){message.textContent=error.message;add.disabled=true;}}
 }
 async function setMain(url){
