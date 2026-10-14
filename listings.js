@@ -64,6 +64,13 @@
         <input id="rentalImage" type="url"
                placeholder="https://example.com/photo.jpg">
 
+<label for="rentalPhoto">Or upload a photo from your phone</label>
+<input id="rentalPhoto"
+       type="file"
+       accept="image/jpeg,image/png,image/webp"
+       style="width:100%;padding:13px">
+<small>JPG, PNG or WebP. Maximum 5 MB.</small>
+
         <p id="listingMessage" role="status"></p>
         <button id="listingSubmit" type="submit">
           Save Listing
