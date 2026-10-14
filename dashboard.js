@@ -226,12 +226,23 @@ ${item.status === "draft" ? `
     openDashboard();
   }
 
+  
   content.addEventListener("click", event => {
     const editButton = event.target.closest(".edit-listing");
-    if (!editButton) return;
 
-    editListing(editButton.dataset.id);
+    if (editButton) {
+      editListing(editButton.dataset.id);
+      return;
+    }
+
+    const publishButton = event.target.closest(".publish-listing");
+
+    if (publishButton) {
+      publishListing(publishButton.dataset.id);
+      return;
+    }
   });
+
 
   button.addEventListener("click", openDashboard);
 
