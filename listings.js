@@ -126,25 +126,34 @@
       return;
     }
 
-    const photo = document.getElementById("rentalPhoto").files[0];
+    
+    const photos = Array.from(
+      document.getElementById("rentalPhoto").files
+    );
 
-    if (photo) {
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/webp"
-      ];
+    if (photos.length > 10) {
+      message.textContent = "Maximum 10 photos per listing.";
+      return;
+    }
 
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp"
+    ];
+
+    for (const photo of photos) {
       if (!allowedTypes.includes(photo.type)) {
-        message.textContent = "Please choose a JPG, PNG or WebP photo.";
+        message.textContent = "Only JPG, PNG or WebP photos are allowed.";
         return;
       }
 
       if (photo.size > 5 * 1024 * 1024) {
-        message.textContent = "Photo must be smaller than 5 MB.";
+        message.textContent = "Each photo must be 5 MB or smaller.";
         return;
       }
     }
+
 
     const listing = {
       owner_id: data.user.id,
