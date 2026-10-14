@@ -33,13 +33,13 @@ function render(){
  grid.classList.toggle("hidden",items.length===0);
  resultsText.textContent=`${items.length} ${items.length===1?"rental":"rentals"} found.`;
 }
-function openDetails(id){
+let detailRequest=0;
+async function openDetails(id){
+ const request=++detailRequest;
  const item=listings.find(x=>String(x.id)===String(id));if(!item)return;
 
   detailContent.innerHTML = `
-    <img class="detail-hero"
-      src="${escapeHTML(item.image)}"
-      alt="${escapeHTML(item.title)}">
+    <div id="detailGallery"></div>
 
     <div class="detail-body">
       <div class="listing-category">
@@ -76,12 +76,19 @@ function openDetails(id){
       </div>
     </div>
   `;
+  const gallery=document.getElementById("detailGallery");
+  window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image});
   modal.classList.remove("hidden");
   document.body.style.overflow = "hidden";
   document.getElementById("demoBook").addEventListener("click",()=>showToast("Booking isn't connected yet. Next step: add accounts and a real booking database."));
  document.getElementById("demoContact").addEventListener("click",()=>showToast("Owner messaging isn't connected yet. We'll add it after account setup."));
+ try {
+  const {data:photos,error}=await window.supabaseClient.from("listing_photos").select("image_url,position").eq("listing_id",item.id).order("position",{ascending:true});
+  if(request!==detailRequest)return;
+  window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image,photos:error?[]:photos||[],unavailable:Boolean(error)});
+ }catch{if(request===detailRequest)window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image,unavailable:true});}
 }
-function closeDetails(){modal.classList.add("hidden");document.body.style.overflow="";}
+function closeDetails(){++detailRequest;modal.classList.add("hidden");document.body.style.overflow="";}
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();selectedCategory="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p.dataset.category==="all"));render();});
 document.getElementById("categoryPills").addEventListener("click",e=>{const pill=e.target.closest("[data-category]");if(!pill)return;selectedCategory=pill.dataset.category;categorySelect.value="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p===pill));render();});
 categorySelect.addEventListener("change",()=>{selectedCategory="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p.dataset.category==="all"));render();});
