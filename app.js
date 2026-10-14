@@ -31,7 +31,7 @@ function render(){
  <div class="listing-bottom"><div class="price"><strong>$${item.price}</strong> <small>/ day</small><div class="price-note">Sample price</div></div><button class="details-button" data-details="${item.id}">View details ↗</button></div></div></article>`).join("");
  emptyState.classList.toggle("hidden",items.length>0);
  grid.classList.toggle("hidden",items.length===0);
- resultsText.textContent=`${items.length} sample ${items.length===1?"listing":"listings"} shown. Browse the demo; these aren't real offers.`;
+ resultsText.textContent=`${items.length} ${items.length===1?"rental":"rentals"} found.`;
 }
 function openDetails(id){
  const item=listings.find(x=>String(x.id)===String(id));if(!item)return;
