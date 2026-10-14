@@ -35,9 +35,49 @@ function render(){
 }
 function openDetails(id){
  const item=listings.find(x=>String(x.id)===String(id));if(!item)return;
- detailContent.innerHTML=`<img class="detail-hero" src="${item.image}" alt="${escapeHTML(item.title)}"><div class="detail-body"><div class="listing-category">${escapeHTML(item.categoryLabel)} · SAMPLE LISTING</div><h2 id="detailTitle">${escapeHTML(item.title)}</h2><div class="listing-location">⌖ ${escapeHTML(item.location)}</div><p class="detail-price">$${item.price}<small> / day · illustrative price</small></p><div class="detail-specs"><span>${escapeHTML(item.seats)}</span><span>${escapeHTML(item.transmission)}</span><span>Owner details not connected</span></div><p class="detail-description">${escapeHTML(item.description)}</p><p class="detail-description"><b>Demo notice:</b> This is a prototype. No reservation or payment will be made, and the displayed location, price, vehicle details, and availability are not verified.</p><div class="detail-actions"><button class="button button-primary" id="demoBook">Request a booking <span>↗</span></button><button class="button button-ghost" id="demoContact">Contact owner</button></div></div>`;
- modal.classList.remove("hidden");document.body.style.overflow="hidden";
- document.getElementById("demoBook").addEventListener("click",()=>showToast("Booking isn't connected yet. Next step: add accounts and a real booking database."));
+
+  detailContent.innerHTML = `
+    <img class="detail-hero"
+      src="${escapeHTML(item.image)}"
+      alt="${escapeHTML(item.title)}">
+
+    <div class="detail-body">
+      <div class="listing-category">
+        ${escapeHTML(item.categoryLabel)}
+      </div>
+
+      <h2 id="detailTitle">${escapeHTML(item.title)}</h2>
+
+      <div class="listing-location">
+        ⌖ ${escapeHTML(item.location)}
+      </div>
+
+      <p class="detail-price">
+        $${item.price}<small> / day</small>
+      </p>
+
+      <p class="detail-description">
+        ${escapeHTML(item.description)}
+      </p>
+
+      <p class="detail-description">
+        <b>Important:</b> Rental availability and details
+        must be confirmed with the owner. Online bookings
+        and payments are not yet available.
+      </p>
+
+      <div class="detail-actions">
+        <button class="button button-primary" id="demoBook">
+          Booking coming soon
+        </button>
+        <button class="button button-ghost" id="demoContact">
+          Messaging coming soon
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("demoBook").addEventListener("click",()=>showToast("Booking isn't connected yet. Next step: add accounts and a real booking database."));
  document.getElementById("demoContact").addEventListener("click",()=>showToast("Owner messaging isn't connected yet. We'll add it after account setup."));
 }
 function closeDetails(){modal.classList.add("hidden");document.body.style.overflow="";}
