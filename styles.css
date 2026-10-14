@@ -30,3 +30,32 @@
     padding: 10px;
   }
 }
+
+/* Flexi Rent Midnight Purple Theme */
+body {
+  background: #100D20;
+}
+
+.site-header {
+  background: rgba(16, 13, 32, 0.97);
+  border-bottom-color: #42365E;
+}
+
+.hero {
+  background:
+    radial-gradient(
+      ellipse at 75% 35%,
+      #39205F 0%,
+      transparent 55%
+    ),
+    linear-gradient(120deg, #100D20, #1B1630);
+}
+
+.search-section,
+.how-section {
+  background: #100D20;
+}
+
+.owner-cta {
+  background: linear-gradient(135deg, #292142, #171129);
+}
