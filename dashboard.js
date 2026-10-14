@@ -114,6 +114,12 @@
   ✏️ Edit Listing
 </button>
 
+<button type="button"
+  class="change-listing-photo"
+  data-id="${escapeHTML(item.id)}">
+  📸 Change Photo
+</button>
+
 ${item.status === "draft" ? `
   <button type="button"
     class="publish-listing"
