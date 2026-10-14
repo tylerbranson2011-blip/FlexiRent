@@ -297,6 +297,80 @@ ${item.status === "published" ? `
 
   let photoListingId = null;
 
+  photoPicker.addEventListener("change", async () => {
+    const photo = photoPicker.files[0];
+    const listingId = photoListingId;
+
+    if (!photo || !listingId) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(photo.type)) {
+      alert("Please choose a JPG, PNG or WebP photo.");
+      return;
+    }
+
+    if (photo.size > 5 * 1024 * 1024) {
+      alert("Photo must be smaller than 5 MB.");
+      return;
+    }
+
+    const { data: authData, error: authError } =
+      await client.auth.getUser();
+
+    if (authError || !authData.user) {
+      alert("Please log in again.");
+      return;
+    }
+
+    const { data: listing, error: loadError } = await client
+      .from("listings")
+      .select("id")
+      .eq("id", listingId)
+      .eq("owner_id", authData.user.id)
+      .single();
+
+    if (loadError || !listing) {
+      alert("Could not find your listing.");
+      return;
+    }
+
+    const extension = photo.type === "image/png"
+      ? "png"
+      : photo.type === "image/webp" ? "webp" : "jpg";
+
+    const filePath =
+      `${authData.user.id}/${crypto.randomUUID()}.${extension}`;
+
+    try {
+      const { error: uploadError } = await client.storage
+        .from("listing-images")
+        .upload(filePath, photo, {
+          contentType: photo.type,
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: photoData } = client.storage
+        .from("listing-images")
+        .getPublicUrl(filePath);
+
+      const { error: saveError } = await client
+        .from("listings")
+        .update({ image_url: photoData.publicUrl })
+        .eq("id", listingId)
+        .eq("owner_id", authData.user.id);
+
+      if (saveError) throw saveError;
+
+      alert("Listing photo updated!");
+      openDashboard();
+    } catch (error) {
+      alert("Photo update failed: " + error.message);
+    }
+  });
+
   content.addEventListener("click", event => {
     const editButton = event.target.closest(".edit-listing");
 
