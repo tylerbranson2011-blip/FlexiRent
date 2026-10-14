@@ -148,6 +148,7 @@ async function main() {
       await dashboard.locator('.edit-listing-photos[data-id="multi"]').click();
       await page.waitForFunction(() => document.querySelectorAll('#photoEditorGrid img').length > 0);
       await page.locator('[aria-label="Close photo editor"]').click();
+      await page.waitForFunction(() => document.querySelector("#photoEditorTitle").closest(".auth-backdrop").hidden);
       await page.locator('[aria-label="Close dashboard"]').click();
 
       // The existing multi-file upload still saves a private draft and ordered photo rows.
