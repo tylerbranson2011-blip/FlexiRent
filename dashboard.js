@@ -313,13 +313,24 @@ ${item.status === "published" ? `
       return;
     }
 
+    
     const unpublishButton = event.target.closest(".unpublish-listing");
 
     if (unpublishButton) {
       unpublishListing(unpublishButton.dataset.id);
       return;
     }
+
+    const photoButton = event.target.closest(".change-listing-photo");
+
+    if (photoButton) {
+      photoListingId = photoButton.dataset.id;
+      photoPicker.value = "";
+      photoPicker.click();
+      return;
+    }
   });
+
 
 
 
