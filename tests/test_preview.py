@@ -36,10 +36,14 @@ class PreviewTests(unittest.TestCase):
             self.assertNotIn(forbidden, self.html)
         self.assertEqual(self.parser.scripts, [None])
     def test_accessible_forms(self):
-        for required in ["checkDialog", "dialogTitle", "checkForm", "checks", "result", "ownerButton", "closeDialog"]:
+        for required in ["inquiryDemo", "demoSubject", "demoMessage", "demoAcknowledged", "inquiryResult", "checkDialog", "dialogTitle", "checkForm", "checks", "result", "ownerButton", "closeDialog"]:
             self.assertIn(required, self.parser.ids)
         self.assertIn('input.required=true', self.html)
         self.assertIn('textContent=statement', self.html)
+    def test_demo_inquiry_is_not_transmitted(self):
+        self.assertIn("Sample inquiry validated locally. No message was sent or stored.", self.html)
+        self.assertIn('minlength="10" maxlength="2000"', self.html)
+        self.assertIn('minlength="3" maxlength="120"', self.html)
     def test_legal_links_exist(self):
         self.assertTrue((ROOT / "preview/legal.html").exists())
         self.assertTrue(any(href == "legal.html" for href in self.parser.links))
