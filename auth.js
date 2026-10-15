@@ -31,7 +31,12 @@
       <h2 id="authTitle">Welcome to Flexi Rent</h2>
       <p id="authSubtitle">Sign in to your account.</p>
 
-      <div id="accountOverview" hidden>\n        <p id="accountVerification"></p>\n        <button id="verifyIdentity" type="button">Verify identity with Stripe</button>\n        <button id="becomeOwner" type="button" hidden>Become an Owner</button>\n      </div>\n      <form id="authForm">
+      <div id="accountOverview" hidden>
+        <p id="accountVerification"></p>
+        <button id="verifyIdentity" type="button">Verify identity with Stripe</button>
+        <button id="becomeOwner" type="button" hidden>Become an Owner</button>
+      </div>
+      <form id="authForm">
         <label for="authEmail">Email address</label>
         <input id="authEmail" type="email"
                autocomplete="email" required>
@@ -41,7 +46,16 @@
                autocomplete="current-password"
                minlength="6" required>
 
-        <div id="accountTypeGroup" hidden>\n          <label for="accountType">I want to join as</label>\n          <select id="accountType" required disabled>\n            <option value="renter">Renter · Find and book rentals</option>\n            <option value="owner">Owner · List and manage rentals</option>\n          </select>\n          <p class="account-type-note">You can rent and list with the same account later. This choice sets your starting experience.</p>\n        </div>\n\n        <p id="authMessage" role="status"
+        <div id="accountTypeGroup" hidden>
+          <label for="accountType">I want to join as</label>
+          <select id="accountType" required disabled>
+            <option value="renter">Renter · Find and book rentals</option>
+            <option value="owner">Owner · List and manage rentals</option>
+          </select>
+          <p class="account-type-note">You can rent and list with the same account later. This choice sets your starting experience.</p>
+        </div>
+
+        <p id="authMessage" role="status"
            aria-live="polite"></p>
 
         <button id="authSubmit" type="submit">
@@ -106,7 +120,9 @@
       border-radius: 9px;
       font-size: 16px;
     }
-    .auth-panel .account-type-note {font-size:12px;margin:8px 0 0;}\n    #becomeOwner {background:#ff633f;color:#111;border:0;border-radius:9px;padding:12px;font-weight:800;cursor:pointer;}\n    #authSubmit {
+    .auth-panel .account-type-note {font-size:12px;margin:8px 0 0;}
+    #becomeOwner {background:#ff633f;color:#111;border:0;border-radius:9px;padding:12px;font-weight:800;cursor:pointer;}
+    #authSubmit {
       width: 100%;
       margin-top: 18px;
       padding: 14px;
@@ -155,15 +171,57 @@
   const accountType = document.getElementById("accountType");
   const overview = document.getElementById("accountOverview");
   const verification = document.getElementById("accountVerification");
-  const becomeOwner = document.getElementById("becomeOwner");\n  const verifyIdentity = document.getElementById("verifyIdentity");\n  verifyIdentity.addEventListener("click", async () => {\n    verifyIdentity.disabled = true;\n    message.textContent = "Starting secure Stripe verification...";\n    try {\n      const {data,error} = await client.functions.invoke("start-identity-verification", {body:{}});\n      if(error) throw error;\n      if(!data?.url || !/^https:\\/\\/verify\\.stripe\\.com\\//.test(data.url)) throw new Error(data?.error || "Verification is not configured yet.");\n      window.location.assign(data.url);\n    } catch(error) {message.textContent = error.message || "Verification unavailable. Try again later.";}\n    finally {verifyIdentity.disabled = false;}\n  });
+  const becomeOwner = document.getElementById("becomeOwner");
+  const verifyIdentity = document.getElementById("verifyIdentity");
+  verifyIdentity.addEventListener("click", async () => {
+    verifyIdentity.disabled = true;
+    message.textContent = "Starting secure Stripe verification...";
+    try {
+      const {data,error} = await client.functions.invoke("start-identity-verification", {body:{}});
+      if(error) throw error;
+      if(!data?.url || !/^https:\\/\\/verify\\.stripe\\.com\\//.test(data.url)) throw new Error(data?.error || "Verification is not configured yet.");
+      window.location.assign(data.url);
+    } catch(error) {message.textContent = error.message || "Verification unavailable. Try again later.";}
+    finally {verifyIdentity.disabled = false;}
+  });
 
   let mode = "login";
-  function showOverview() {\n    if (!currentUser) return;\n    const emailVerified = Boolean(currentUser.email_confirmed_at || currentUser.confirmed_at);\n    form.hidden = true;\n    switchButton.hidden = true;\n    overview.hidden = false;\n    title.textContent = "My Flexi Rent Account";\n    subtitle.textContent = currentUser.email || "Account";\n    verifyIdentity.disabled = !emailVerified;\n    verification.textContent = emailVerified ? "Email verified. Identity verification is not yet available. It will be required before rentals or listings can be activated." : "Email not verified. Confirm your email first. Identity verification is also required before rentals or listings can be activated.";\n    becomeOwner.hidden = currentUser.user_metadata?.account_type === "owner";\n    message.textContent = "";\n  }\n  becomeOwner.addEventListener("click", async () => {\n    becomeOwner.disabled = true;\n    message.textContent = "Updating account...";\n    try {\n      const {data,error} = await client.auth.updateUser({data:{account_type:"owner"}});\n      if (error) throw error;\n      currentUser = data.user;\n      updateHeader();\n      showOverview();\n      message.textContent = "Owner option enabled. Identity verification is still required before listing rentals.";\n    } catch (error) {message.textContent = error.message || "Unable to update account.";}\n    finally {becomeOwner.disabled = false;}\n  });
+  function showOverview() {
+    if (!currentUser) return;
+    const emailVerified = Boolean(currentUser.email_confirmed_at || currentUser.confirmed_at);
+    form.hidden = true;
+    switchButton.hidden = true;
+    overview.hidden = false;
+    title.textContent = "My Flexi Rent Account";
+    subtitle.textContent = currentUser.email || "Account";
+    verifyIdentity.disabled = !emailVerified;
+    verification.textContent = emailVerified ? "Email verified. Identity verification is not yet available. It will be required before rentals or listings can be activated." : "Email not verified. Confirm your email first. Identity verification is also required before rentals or listings can be activated.";
+    becomeOwner.hidden = currentUser.user_metadata?.account_type === "owner";
+    message.textContent = "";
+  }
+  becomeOwner.addEventListener("click", async () => {
+    becomeOwner.disabled = true;
+    message.textContent = "Updating account...";
+    try {
+      const {data,error} = await client.auth.updateUser({data:{account_type:"owner"}});
+      if (error) throw error;
+      currentUser = data.user;
+      updateHeader();
+      showOverview();
+      message.textContent = "Owner option enabled. Identity verification is still required before listing rentals.";
+    } catch (error) {message.textContent = error.message || "Unable to update account.";}
+    finally {becomeOwner.disabled = false;}
+  });
   let currentUser = null;
 
   function setMode(nextMode) {
     mode = nextMode;
-    form.hidden = false;\n    overview.hidden = true;\n    switchButton.hidden = false;\n    form.reset();\n    accountTypeGroup.hidden = mode !== "signup";\n    accountType.disabled = mode !== "signup";
+    form.hidden = false;
+    overview.hidden = true;
+    switchButton.hidden = false;
+    form.reset();
+    accountTypeGroup.hidden = mode !== "signup";
+    accountType.disabled = mode !== "signup";
     message.textContent = "";
     title.textContent =
       mode === "signup" ? "Create your account" : "Welcome back";
@@ -194,7 +252,8 @@
   function updateHeader() {
     if (currentUser) {
       loginButton.textContent = "Log Out";
-      const type = currentUser.user_metadata?.account_type;\n      signupButton.textContent = type === "owner" ? "Owner Account" : type === "renter" ? "Renter Account" : "My Account";
+      const type = currentUser.user_metadata?.account_type;
+      signupButton.textContent = type === "owner" ? "Owner Account" : type === "renter" ? "Renter Account" : "My Account";
     } else {
       loginButton.textContent = "Log In";
       signupButton.textContent = "Sign Up";
@@ -217,7 +276,8 @@
 
   signupButton.addEventListener("click", () => {
     if (currentUser) {
-      modal.hidden = false;\n      showOverview();
+      modal.hidden = false;
+      showOverview();
     } else {
       openModal("signup");
     }
@@ -253,7 +313,8 @@
           email,
           password: pass,
           options: {
-            emailRedirectTo: window.location.origin,\n            data: { account_type: accountType.value }
+            emailRedirectTo: window.location.origin,
+            data: { account_type: accountType.value }
           }
         });
 
