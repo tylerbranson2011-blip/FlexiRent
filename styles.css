@@ -161,3 +161,7 @@ body {
 .action-notice button{background:transparent;border:0;color:inherit;font-size:23px;cursor:pointer;padding:0 2px}
 
 
+
+/* Search fields wrap cleanly as distance and operator filters grow. */
+.search-panel{grid-template-columns:repeat(3,minmax(0,1fr))}.search-panel .search-field{min-width:0}.search-panel .search-button{grid-column:1/-1}
+@media(max-width:780px){.search-panel{grid-template-columns:1fr}.search-panel .search-button{grid-column:auto}}
