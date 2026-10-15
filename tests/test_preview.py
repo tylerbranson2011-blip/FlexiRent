@@ -41,8 +41,8 @@ class PreviewTests(unittest.TestCase):
         self.assertIn('input.required=true', self.html)
         self.assertIn('textContent=statement', self.html)
     def test_legal_links_exist(self):
-        self.assertTrue((ROOT / "legal.html").exists())
-        self.assertTrue(any("legal.html" in href for href in self.parser.links))
+        self.assertTrue((ROOT / "preview/legal.html").exists())
+        self.assertTrue(any(href == "legal.html" for href in self.parser.links))
     def test_no_deceptive_booking(self):
         self.assertIn("not a reservation", self.html)
         self.assertIn("no accounts, bookings, messages or payments".lower(), self.html.lower())
