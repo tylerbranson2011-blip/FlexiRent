@@ -263,3 +263,9 @@ body.account-settings-open{overflow:hidden!important}
 .account-settings-panel #settingsForm{padding-bottom:max(20px,env(safe-area-inset-bottom));}
 .account-settings-panel #settingsForm button[type="submit"]{display:block;min-height:48px;width:100%;margin-top:14px;margin-bottom:8px}
 @media(max-width:480px){.account-settings-backdrop:not([hidden]){padding:8px!important}.account-settings-panel{max-height:calc(100dvh - 16px)!important;padding:16px!important}}
+
+/* Stripe identity verification call-to-action and completed state */
+#verifyIdentity{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:49px;width:100%;margin:12px 0;padding:13px 18px;border:1px solid #bb94ff;border-radius:12px;background:linear-gradient(135deg,#6931c6,#9b4ee7);color:#fff;font-size:15px;font-weight:800;letter-spacing:.15px;box-shadow:0 5px 20px #7a3bd040;transition:filter .15s,transform .15s}
+#verifyIdentity:not(:disabled):hover{filter:brightness(1.13);transform:translateY(-1px)}
+#verifyIdentity:disabled:not(.is-verified){opacity:.65;cursor:not-allowed}
+#verifyIdentity.is-verified,#verifyIdentity.is-verified:disabled{background:#164d39!important;border-color:#48c78e!important;color:#e1ffef!important;box-shadow:none!important;opacity:1!important;cursor:default!important;transform:none!important}
