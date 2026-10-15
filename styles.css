@@ -233,3 +233,23 @@ body {
 .renter-view-owner{margin:10px 0 0 8px;min-height:42px;border:1px solid #9d80e7!important;border-radius:9px;background:#4b3494!important;color:#fff!important;font-weight:750}
 .renter-view-owner:hover{filter:brightness(1.15)}
 @media(max-width:480px){.renter-view-owner{display:block;width:100%;margin:10px 0 0}}
+
+/* Owner storefront and opt-in contact settings */
+.profile-privacy-controls{margin:12px 0;display:grid;gap:8px;padding:12px;border:1px solid #635182;border-radius:10px;background:#211a31}
+.profile-privacy-controls label{display:flex!important;align-items:center;gap:10px;font-size:14px}
+.profile-privacy-controls input{width:20px!important;min-width:20px;height:20px;accent-color:#a779ff}
+.profile-privacy-help{font-size:12px;color:#cfc1e3}
+.public-owner-backdrop{z-index:10015}
+.public-owner-panel{max-width:680px!important;max-height:90dvh;overflow-y:auto}
+.public-owner-intro{padding:15px;border:1px solid #584577;border-radius:12px;background:#221a35;margin:12px 0}
+.public-owner-intro p{overflow-wrap:anywhere}
+.public-owner-intro a{color:#cbb0ff}
+.public-owner-listings{display:grid;gap:12px}
+.public-owner-card{display:flex;gap:13px;padding:12px;border:1px solid #5c4a79;border-radius:12px;background:#161324}
+.public-owner-card img{width:116px;height:104px;object-fit:cover;border-radius:8px;flex:none}
+.public-owner-card>div{min-width:0;flex:1}
+.public-owner-card p{margin:5px 0;color:#d2c8e3}
+.public-owner-card button{margin-top:6px}
+.listing-owner-link{margin:12px 0}
+.listing-owner-link button{background:#4b3494;color:#fff;border-color:#a48be9}
+@media(max-width:480px){.public-owner-card{flex-direction:column}.public-owner-card img{width:100%;height:150px}}
