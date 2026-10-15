@@ -31,3 +31,6 @@ for each row execute function public.require_verified_identity();
 drop trigger if exists bookings_require_verified_identity on public.booking_requests;
 create trigger bookings_require_verified_identity before insert or update on public.booking_requests
 for each row execute function public.require_verified_identity();
+
+-- Prevent clients from directly invoking the trigger function.
+revoke execute on function public.require_verified_identity() from public, anon, authenticated;
