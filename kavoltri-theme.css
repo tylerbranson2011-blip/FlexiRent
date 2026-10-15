@@ -75,3 +75,15 @@ body{background:#0a0b0c;color:#f8f7f4}
  .hero-copy{order:1}
 }
 .visual-category-card:before{filter:saturate(1.08)}
+
+/* Hero image first, messaging second on narrow screens. */
+@media(max-width:650px){
+ .hero{display:flex!important;flex-direction:column!important;padding-top:0!important;background:#0b0c0e!important;min-height:0!important}
+ .hero:before{display:none!important}
+ .hero:after{order:0!important;display:block!important;align-self:stretch!important;width:calc(100% + 48px)!important;height:auto!important;aspect-ratio:16/9!important;margin:0 -24px 0!important;background-image:url("file_0000000001d081f68cdde5f0976fa0e5.png")!important;background-position:center!important;background-size:cover!important;background-repeat:no-repeat!important;filter:none!important;flex:none!important}
+ .hero-copy{order:1!important;padding:22px 0 26px!important}
+ .hero-bottom-line{order:2!important}
+}
+@media(max-width:480px){
+ .hero:after{width:calc(100% + 34px)!important;margin-left:-17px!important;margin-right:-17px!important}
+}
