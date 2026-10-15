@@ -221,9 +221,11 @@ ${item.status === "published" ? `
   const editForm=editor.querySelector("#editListingForm");
   const editMessage=editor.querySelector("#editListingMessage");
   let editingId=null;
+  let editingPublished=false;
   function closeEditor(){
     editor.hidden=true;
     editingId=null;
+    editingPublished=false;
     modal.hidden=false;
   }
   editor.querySelector(".auth-close").addEventListener("click",closeEditor);
@@ -234,10 +236,13 @@ ${item.status === "published" ? `
     const {data:{user},error:authError}=await client.auth.getUser();
     if(authError||!user){window.FlexiRentNotice?.show("Please log in again.","error");return;}
     const {data:listing,error}=await client.from("listings")
-      .select("id,title,description,price_per_day,price_per_hour,operator_option")
+      .select("id,title,description,price_per_day,price_per_hour,operator_option,status")
       .eq("id",id).eq("owner_id",user.id).single();
     if(error||!listing){window.FlexiRentNotice?.show("Could not load this listing.","error");return;}
     editingId=id;
+    editingPublished=listing.status==="published";
+    for(const field of ["daily","hourly","operator"])editForm.elements[field].disabled=editingPublished;
+    editor.querySelector(".listing-editor-hint").textContent=editingPublished?"🔒 Published listing: prices and operator terms are locked. Unpublish first to change them. Existing booking agreements remain unchanged.":"To change available dates or pickup times, unpublish the listing first and use Availability & Requests.";
     editForm.elements.title.value=listing.title||"";
     editForm.elements.daily.value=listing.price_per_day??"";
     editForm.elements.hourly.value=listing.price_per_hour??"";
@@ -265,10 +270,8 @@ ${item.status === "published" ? `
     try{
       const {data:{user},error:authError}=await client.auth.getUser();
       if(authError||!user)throw Error("Please log in again.");
-      const {data,error}=await client.from("listings").update({
-        title,price_per_day:daily,price_per_hour:hourly,
-        operator_option:operator,description:editForm.elements.description.value.trim()
-      }).eq("id",editingId).eq("owner_id",user.id).select("id");
+      const changes=editingPublished?{title,description:editForm.elements.description.value.trim()}:{title,price_per_day:daily,price_per_hour:hourly,operator_option:operator,description:editForm.elements.description.value.trim()};
+      const {data,error}=await client.from("listings").update(changes).eq("id",editingId).eq("owner_id",user.id).select("id");
       if(error)throw error;
       if(!data?.length)throw Error("Listing not found or permission denied.");
       window.FlexiRentNotice?.show("Listing changes saved!");
