@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Flexi Rent | Connection Hub Test Preview</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,Arial,sans-serif;background:#0d0b17;color:#f4f0ff}*{box-sizing:border-box}body{margin:0}header,main,footer{max-width:1060px;margin:auto;padding:22px}header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}a{color:#d9b7ff}.brand{font-size:1.5rem;font-weight:900}nav{display:flex;gap:14px;flex-wrap:wrap}.flag{background:#422069;padding:12px 22px;text-align:center;font-weight:700}.hero{padding:60px 0 38px}.eyebrow{color:#c79eff;text-transform:uppercase;letter-spacing:.15em;font-weight:700}h1{font-size:clamp(2.3rem,6vw,4.8rem);line-height:1.04;margin:15px 0}h1 span{color:#b977ff}.lead{max-width:720px;line-height:1.7;color:#c8c1d2}button,.btn{background:#a855f7;color:#14091f;border:0;padding:13px 18px;border-radius:9px;font-weight:800;cursor:pointer;font-size:1rem}.secondary{background:#2b2340;color:#fff}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}.card{background:#1c172b;border:1px solid #45335d;border-radius:16px;padding:20px}h2{margin-top:40px}p,li{line-height:1.6}.muted{color:#b9b1c4}.card .symbol{font-size:2.8rem}fieldset{border:1px solid #69518b;border-radius:12px;margin:15px 0;padding:16px}label{display:flex;align-items:flex-start;gap:12px;margin:13px 0;line-height:1.5}input[type=checkbox]{width:19px;height:19px;flex:none;accent-color:#a855f7}input[type=text],textarea,select{width:100%;padding:12px;border:1px solid #6b548a;border-radius:9px;background:#171224;color:white}dialog{background:#191329;color:white;border:1px solid #a855f7;border-radius:16px;width:min(94vw,620px);max-height:85vh;overflow:auto}dialog::backdrop{background:#050308d9}.dialog-head{display:flex;align-items:center;justify-content:space-between}#result{font-weight:700;color:#cda7ff}footer{border-top:1px solid #473858;margin-top:50px;color:#c7bcd6}
+</style></head><body>
+<div class="flag">TEST PREVIEW ONLY · FICTIONAL LISTINGS · NO ACCOUNTS, BOOKINGS, MESSAGES OR PAYMENTS</div>
+<header><div class="brand">FLEXI <span style="color:#b977ff">RENT</span></div><nav><a href="#browse">Browse</a><a href="#how">How it works</a><a href="#responsibility">Responsibilities</a><a href="../legal.html">Draft legal policies</a></nav></header>
+<main><section class="hero"><div class="eyebrow">The owner-to-renter connection hub</div><h1>FIND THE GEAR.<br><span>CONNECT DIRECT.</span></h1><p class="lead">Find trailers, towable campers and equipment posted by owners. Owners and renters independently confirm availability, suitability, insurance, payments and rental agreements. Flexi Rent is not a rental party, inspector, insurer or payment processor.</p><a class="btn" href="#browse">Explore the demo</a></section>
+<section id="browse"><h2>Explore categories</h2><p class="muted">Illustrative categories only. No real items are available through this preview.</p><div class="grid">
+<article class="card"><div class="symbol">🚛</div><h3>Trailers</h3><p>Utility, cargo and equipment trailers.</p><button data-inquiry="Trailer" class="secondary">Preview renter checklist</button></article>
+<article class="card"><div class="symbol">🏕️</div><h3>Towable campers</h3><p>Travel trailers and towable campers only.</p><button data-inquiry="Towable camper" class="secondary">Preview renter checklist</button></article>
+<article class="card"><div class="symbol">🧰</div><h3>Equipment</h3><p>Selected equipment subject to legal and safety review.</p><button data-inquiry="Equipment" class="secondary">Preview renter checklist</button></article>
+</div></section>
+<section id="how"><h2>How it works</h2><div class="grid"><div class="card"><h3>1. Discover</h3><p>Browse owner-posted listings and evaluate details yourself.</p></div><div class="card"><h3>2. Connect</h3><p>Send an inquiry only after both parties' verified acceptance is supported. An inquiry is not a reservation.</p></div><div class="card"><h3>3. Agree directly</h3><p>Arrange your own written contract, payments, insurance and pickup terms.</p></div></div></section>
+<section id="responsibility"><h2>Owner and renter responsibilities</h2><p class="lead">Owners must have the right to list and are responsible for accuracy, condition, compliance and appropriate insurance. Renters independently verify ownership, safety, qualifications and coverage. Both parties agree on all financial and damage terms directly. Flexi Rent cannot guarantee a liability waiver and legal obligations may apply.</p><button id="ownerButton">Preview owner self-certification</button></section>
+<section><h2>Subscription plan (proposed)</h2><p>Owners: proposed 7-day trial, then $9.99 per month. No subscription checkout is enabled in this test. Automatic renewal, cancellation terms and consent must be reviewed before billing launches.</p></section>
+</main>
+<dialog id="checkDialog" aria-labelledby="dialogTitle"><div class="dialog-head"><h2 id="dialogTitle">Acknowledgment preview</h2><button class="secondary" id="closeDialog" aria-label="Close dialog">✕</button></div><p class="muted" id="dialogIntro"></p><form id="checkForm"><fieldset id="checks"><legend>Confirm each item</legend></fieldset><p><a href="../legal.html" target="_blank" rel="noopener">Read draft terms</a></p><button type="submit">Validate checklist locally</button><p id="result" role="status" aria-live="polite"></p></form></dialog>
+<footer>© Flexi Rent · Test preview only · No data is submitted or saved. <a href="../legal.html">Draft agreements</a></footer>
+<script>
+"use strict";
+const owner=[
+"I own the item or have authority to rent it.",
+"My listing and equipment condition information is accurate.",
+"I am responsible for safety, maintenance, recalls, registration and compliance.",
+"I will confirm insurance that actually covers rental activity.",
+"I will check renter qualifications, licenses and towing or operating suitability.",
+"I handle agreements, payments, deposits, refunds, damage and disputes directly.",
+"I understand Flexi Rent is not a party to the rental.",
+"I have read and agree to the draft owner and marketplace terms for preview purposes."
+];
+const renter=[
+"This is an inquiry preview, not a booking.",
+"I will verify ownership, equipment condition and suitability.",
+"I will confirm licenses, towing or operating requirements and rental insurance coverage.",
+"I will agree directly with the owner on price, deposits, pickup, cancellation and damage.",
+"I understand Flexi Rent does not insure rentals or handle rental payments.",
+"I have read and agree to the draft renter and marketplace terms for preview purposes."
+];
+const dialog=document.getElementById("checkDialog"),form=document.getElementById("checkForm"),checks=document.getElementById("checks"),result=document.getElementById("result");
+function openChecklist(role,item){document.getElementById("dialogTitle").textContent=role==="owner"?"Owner self-certification":"Renter acknowledgment";document.getElementById("dialogIntro").textContent="Demo only: "+(item||"listing")+". Nothing here is submitted, stored, or legally accepted.";checks.replaceChildren();(role==="owner"?owner:renter).forEach((statement,i)=>{const label=document.createElement("label"),input=document.createElement("input"),span=document.createElement("span");input.type="checkbox";input.required=true;input.name="statement_"+i;span.textContent=statement;label.append(input,span);checks.appendChild(label)});result.textContent="";dialog.showModal();}
+document.getElementById("ownerButton").addEventListener("click",()=>openChecklist("owner","owner listing"));
+document.querySelectorAll("[data-inquiry]").forEach(b=>b.addEventListener("click",()=>openChecklist("renter",b.dataset.inquiry)));
+document.getElementById("closeDialog").addEventListener("click",()=>dialog.close());
+form.addEventListener("submit",e=>{e.preventDefault();result.textContent="Checklist complete for demo only. No account, inquiry or acceptance record was created.";});
+</script></body></html>
