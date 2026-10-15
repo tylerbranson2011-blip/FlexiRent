@@ -131,3 +131,8 @@ body {
 .booking-calendar-grid button:not(:disabled):focus-visible{outline:3px solid #b775ff;outline-offset:1px}
 .booking-calendar small{display:block;color:#c9d0dc;margin-top:10px}
 #bookingForm input[readonly]{cursor:pointer;color:#fff}
+
+/* Keep account buttons their original size while moving them near the header. */
+.account-shortcuts{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--line)}
+.account-shortcuts:empty{display:none}
+.account-shortcuts .account-shortcut{margin:0;flex:none;width:auto}
