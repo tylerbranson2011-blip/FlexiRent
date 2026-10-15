@@ -10,14 +10,14 @@ panel.querySelector(".auth-close").addEventListener("click",close);
 panel.addEventListener("click",e=>{if(e.target===panel)close();});
 panel.addEventListener("keydown",e=>{if(e.key==="Escape")close();});
 async function open(ownerId){
- if(!/^[0-9a-f-]{36}$/i.test(String(ownerId||"")))return;
+ if(!/^[0-9a-f-]{36}$/i.test(String(ownerId||"")))return false;
  const request=++generation;panel.hidden=false;body.textContent="Loading owner storefront...";
  const [profileResult,listingsResult]=await Promise.all([
  client.rpc("get_public_profile",{p_user_id:ownerId}),
  client.from("listings").select("id,title,category,city,state,price_per_day,image_url").eq("owner_id",ownerId).eq("status","published").order("created_at",{ascending:false})
  ]);
- if(request!==generation||panel.hidden)return;
- if(profileResult.error||!profileResult.data){body.textContent="This owner profile is unavailable.";return;}
+ if(request!==generation||panel.hidden)return false;
+ if(profileResult.error||!profileResult.data){body.textContent="This owner profile is unavailable.";return true;}
  const p=profileResult.data;
  const contact=(p.email?'<p>✉️ <a href="mailto:'+encodeURIComponent(p.email)+'">'+esc(p.email)+'</a></p>':'')+(p.phone?'<p>📞 '+esc(p.phone)+'</p>':'');
  const items=listingsResult.data||[];
