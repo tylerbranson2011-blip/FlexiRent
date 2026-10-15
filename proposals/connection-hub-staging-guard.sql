@@ -21,15 +21,12 @@ create table if not exists public.marketplace_consents (
 );
 alter table public.marketplace_consents enable row level security;
 revoke all on public.marketplace_consents from anon;
-grant select,insert on public.marketplace_consents to authenticated;
+grant select on public.marketplace_consents to authenticated;
 create policy "consent_select_self" on public.marketplace_consents
  for select to authenticated using (user_id = (select auth.uid()));
-create policy "consent_insert_self" on public.marketplace_consents
- for insert to authenticated with check (
- user_id = (select auth.uid()) and
- exists (select 1 from auth.users u where u.id=(select auth.uid()) and u.email_confirmed_at is not null)
- );
--- No UPDATE or DELETE policies/grants. Records are immutable to Data API users.\n-- SECURITY REVIEW: direct inserts can spoof accepted_at and policy_version.\n-- Replace direct insert access with a narrow server-controlled acceptance RPC before launch.
+-- No UPDATE or DELETE policies/grants. Records are immutable to Data API users.
+-- SECURITY REVIEW: direct inserts can spoof accepted_at and policy_version.
+-- Consent writes are only permitted through the separately reviewed acceptance RPC.
 -- The status guard below prevents publishing without consent even with legacy
 -- permissive owner UPDATE policies. It also applies to inserts and RPC writes.
 create or replace function public.connection_hub_publish_guard()
@@ -50,6 +47,7 @@ begin
 end;
 $$;
 revoke all on function public.connection_hub_publish_guard() from public,anon,authenticated;
+drop trigger if exists connection_hub_publish_guard_trg on public.listings;
 create trigger connection_hub_publish_guard_trg
  before insert or update on public.listings
  for each row execute function public.connection_hub_publish_guard();
