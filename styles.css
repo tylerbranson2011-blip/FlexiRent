@@ -117,4 +117,4 @@ body {
 
 /* Make native booking calendar icons visible against dark inputs (Android Chrome). */
 #bookingForm input[type="date"]{color-scheme:dark;}
-#bookingForm input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:1;cursor:pointer;}
+#bookingForm input[type="date"]::-webkit-calendar-picker-indicator{filter:brightness(0) invert(1);opacity:1;cursor:pointer;}
