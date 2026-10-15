@@ -118,3 +118,16 @@ body {
 /* Make native booking calendar icons visible against dark inputs (Android Chrome). */
 #bookingForm input[type="date"]{color-scheme:dark;}
 #bookingForm input[type="date"]::-webkit-calendar-picker-indicator{filter:brightness(0) invert(1);opacity:1;cursor:pointer;}
+
+/* Accessible booking date selection with disabled unavailable days */
+.booking-calendar{margin:8px 0 16px;padding:12px;background:#242933;border:1px solid #687184;border-radius:12px;color:#fff}
+.booking-calendar[hidden]{display:none}
+.booking-calendar-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.booking-calendar-header button{background:#3c4250;color:#fff;border:1px solid #8b94a5;border-radius:8px;min-width:42px;min-height:42px;font-size:24px}
+.booking-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.booking-calendar-grid b{font-size:11px;padding:8px 0;color:#d2d6e0}
+.booking-calendar-grid button{min-width:0;min-height:42px;border:1px solid #778197;border-radius:7px;background:#3d4658;color:#fff;font-size:15px}
+.booking-calendar-grid button:disabled{background:#191c24;color:#828997;border-color:#323744;text-decoration:line-through;opacity:.65}
+.booking-calendar-grid button:not(:disabled):focus-visible{outline:3px solid #b775ff;outline-offset:1px}
+.booking-calendar small{display:block;color:#c9d0dc;margin-top:10px}
+#bookingForm input[readonly]{cursor:pointer;color:#fff}
