@@ -98,6 +98,8 @@
       return;
     }
 
+    const {data:role,error:roleError}=await client.from("account_roles").select("account_type").eq("user_id",data.user.id).maybeSingle();
+    if(roleError||role?.account_type!=="owner"){alert("Only Owner accounts can create listings. Open My Account and select Become an Owner first.");return;}
     message.textContent = "";
     modal.hidden = false;
   }
