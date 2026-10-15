@@ -38,6 +38,7 @@ begin
  and l.category in ('trailer','rv','equipment');
  if v_owner is null then raise exception 'Listing unavailable'; end if;
  if v_owner=v_user then raise exception 'Cannot inquire about your own listing'; end if;
+ if not exists (select 1 from public.marketplace_consents c where c.user_id=v_owner and c.role='owner' and c.policy_version='REPLACE_WITH_APPROVED_VERSION') then raise exception 'Owner agreement not current'; end if;
  if length(btrim(coalesce(p_subject,''))) not between 3 and 120
   or length(btrim(coalesce(p_message,''))) not between 10 and 2000
  then raise exception 'Invalid inquiry length'; end if;
@@ -52,5 +53,5 @@ end;
 $$;
 revoke all on function public.send_connection_inquiry(uuid,text,text) from public,anon;
 grant execute on function public.send_connection_inquiry(uuid,text,text) to authenticated;
--- Before launch: test concurrent rate-limit behavior, moderation/reporting,
+-- NOTE: count-based rate limiting can be raced by concurrent requests; replace with atomic\n-- server-side throttle and abuse controls before public activation.\n-- Before launch: test concurrent rate-limit behavior, moderation/reporting,
 -- verified owner consent, owner blocking, privacy retention and notification abuse.
