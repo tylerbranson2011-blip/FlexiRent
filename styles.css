@@ -114,3 +114,7 @@ body {
 /* Keep the photo editor above the listings dashboard */
 .photo-editor-panel{position:relative}
 .auth-backdrop:has(.photo-editor-panel){z-index:10001}
+
+/* Make native booking calendar icons visible against dark inputs (Android Chrome). */
+#bookingForm input[type="date"]{color-scheme:dark;}
+#bookingForm input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:1;cursor:pointer;}
