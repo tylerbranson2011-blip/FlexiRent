@@ -228,3 +228,8 @@ body {
 .renter-profile-rating{color:#f7d477!important;font-weight:750}
 .renter-profile-privacy{font-size:12px;color:#c7bcd8!important}
 .approved-profile-back{margin-top:14px}
+
+/* Renter rental history action */
+.renter-view-owner{margin:10px 0 0 8px;min-height:42px;border:1px solid #9d80e7!important;border-radius:9px;background:#4b3494!important;color:#fff!important;font-weight:750}
+.renter-view-owner:hover{filter:brightness(1.15)}
+@media(max-width:480px){.renter-view-owner{display:block;width:100%;margin:10px 0 0}}
