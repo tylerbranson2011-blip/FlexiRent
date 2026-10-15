@@ -15,6 +15,20 @@
   const shortcuts = document.getElementById("accountShortcuts");
   if (!shortcuts) return;
   shortcuts.appendChild(button);
+  button.hidden = true;
+  let roleRequest=0;
+  async function syncOwnerButton(){
+    const request=++roleRequest;
+    button.hidden=true;
+    const {data:{user},error}=await client.auth.getUser();
+    if(request!==roleRequest||error||!user)return;
+    const result=await client.from("account_roles").select("account_type").eq("user_id",user.id).maybeSingle();
+    if(request!==roleRequest)return;
+    button.hidden=Boolean(result.error||result.data?.account_type!=="owner");
+  }
+  window.addEventListener("flexirent:account-role-changed",syncOwnerButton);
+  client.auth.onAuthStateChange(()=>{setTimeout(syncOwnerButton,0);});
+  syncOwnerButton();
 
   // Create the dashboard popup.
   const modal = document.createElement("div");
@@ -62,6 +76,13 @@
       return;
     }
 
+    const role=await client.from("account_roles").select("account_type").eq("user_id",data.user.id).maybeSingle();
+    if(request!==dashboardRequest)return;
+    if(role.error||role.data?.account_type!=="owner"){
+      button.hidden=true;
+      alert("Owner account required. Upgrade your account to manage listings.");
+      return;
+    }
     modal.hidden = false;
     content.textContent = "Loading your listings...";
 
