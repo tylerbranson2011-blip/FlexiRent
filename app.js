@@ -108,7 +108,7 @@ async function openDetails(id){
         must be confirmed with the owner. Payments are not yet available.
       </p>
 
-      <div class="detail-actions">
+      <div class="listing-owner-link"><button type="button" class="button button-ghost" id="viewListingOwner">👤 View owner profile & listings ↗</button></div>\n      <div class="detail-actions">
         <button class="button button-primary" id="demoBook">
           Request booking
         </button>
@@ -122,7 +122,7 @@ async function openDetails(id){
   window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image});
   modal.classList.remove("hidden");
   document.body.style.overflow = "hidden";
-  document.getElementById("demoBook").addEventListener("click",()=>{closeDetails();window.FlexiRentBooking?.open(item.id);});
+  document.getElementById("viewListingOwner").addEventListener("click",()=>{closeDetails();window.FlexiRentOwnerProfile?.open(item.ownerId);});\n  document.getElementById("demoBook").addEventListener("click",()=>{closeDetails();window.FlexiRentBooking?.open(item.id);});
  document.getElementById("demoContact").addEventListener("click",()=>showToast("Owner messaging isn't connected yet. We'll add it after account setup."));
  try {
   const {data:photos,error}=await window.supabaseClient.from("listing_photos").select("image_url,position").eq("listing_id",item.id).order("position",{ascending:true});
@@ -158,7 +158,7 @@ async function loadRealListings() {
 
   const { data, error } = await client
     .from("listings")
-    .select("id,title,description,category,city,state,price_per_day,price_per_hour,operator_option,image_url")
+    .select("id,owner_id,title,description,category,city,state,price_per_day,price_per_hour,operator_option,image_url")
     .eq("status", "published")
     .order("created_at", { ascending: false });
 
