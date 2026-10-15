@@ -130,7 +130,7 @@ async function openDetails(id){
   window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image});
   modal.classList.remove("hidden");
   document.body.style.overflow = "hidden";
-  document.getElementById("viewListingOwner").addEventListener("click",()=>{closeDetails();window.FlexiRentOwnerProfile?.open(item.ownerId);});
+  document.getElementById("viewListingOwner").addEventListener("click",async()=>{const opener=window.FlexiRentOwnerProfile?.open;if(!opener){showToast("Owner storefront is unavailable. Please refresh.");return;}const opened=await opener(item.ownerId);if(opened)closeDetails();else showToast("Unable to open owner storefront.");});
   document.getElementById("demoBook").addEventListener("click",()=>{closeDetails();window.FlexiRentBooking?.open(item.id);});
  document.getElementById("demoContact").addEventListener("click",()=>showToast("Owner messaging isn't connected yet. We'll add it after account setup."));
  try {
