@@ -12,7 +12,7 @@
   const categories = [
     ["trailer", "Trailers"],
     ["rv", "Towable Campers Only"],
-    ["equipment", "Nonmotorized Equipment"]
+    ["equipment", "Equipment (subject to review)"]
   ];
 
   const modal = document.createElement("div");
@@ -25,8 +25,8 @@
          style="max-height:90vh;overflow:auto">
       <button class="auth-close" type="button"
               aria-label="Close">×</button>
-      <h2 id="listingTitle">List Your Rental</h2>
-      <p>Tell renters what you have available.</p>
+      <h2 id="listingTitle">Create an Owner Listing Draft</h2>
+      <p>Draft only. Your self-certifications are not yet recorded by the server, and publishing is disabled pending review.</p>
 
       <form id="newListingForm">
         <label for="rentalTitle">Listing title</label>
@@ -71,7 +71,7 @@
 <small>JPG, PNG or WebP. Maximum 5 MB.</small>
 
         <fieldset style="margin:18px 0;border:1px solid #8b5cf6;border-radius:10px;padding:14px"><legend>Owner self-certification (required)</legend>
-<p>Check each statement individually. Your answers are not independently verified by Flexi Rent.</p>
+<p>Check each statement individually. These are draft acknowledgments only, not yet recorded in a secure audit log. Flexi Rent does not independently verify your answers.</p>
 <label style="display:block"><input type="checkbox" class="owner-cert" required> I own this item or am legally authorized to rent it.</label>
 <label style="display:block"><input type="checkbox" class="owner-cert" required> The listing, photos, condition, price and availability are accurate.</label>
 <label style="display:block"><input type="checkbox" class="owner-cert" required> I am responsible for maintenance, safety, recalls, registration, permits and applicable taxes.</label>
@@ -164,6 +164,8 @@
 
 
     if (!["trailer","rv","equipment"].includes(document.getElementById("rentalCategory").value)) { message.textContent = "This category is not eligible for the connection-only launch."; return; }
+
+    if (!data.user.email_confirmed_at) { message.textContent = "Please verify your email address before saving a draft."; return; }
 
     const listing = {
       owner_id: data.user.id,
