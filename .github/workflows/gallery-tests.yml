@@ -17,6 +17,8 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           for file in *.js tests/*.cjs; do node --check "$file"; done
+      - name: Check booking phase one integration
+        run: node tests/booking.test.cjs
       - name: Check photo editor integration
         run: node tests/photo-editor.test.cjs
       - name: Run behavior checks
@@ -26,4 +28,7 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.56.1
           npx playwright install --with-deps chromium
       - name: Run desktop and mobile browser checks
-        run: node tests/gallery.test.cjs
+        run: |
+          node tests/gallery.test.cjs
+          node tests/booking.browser.test.cjs
+          node tests/auth.browser.test.cjs

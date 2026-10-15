@@ -114,3 +114,158 @@ body {
 /* Keep the photo editor above the listings dashboard */
 .photo-editor-panel{position:relative}
 .auth-backdrop:has(.photo-editor-panel){z-index:10001}
+
+/* Make native booking calendar icons visible against dark inputs (Android Chrome). */
+#bookingForm input[type="date"]{color-scheme:dark;}
+#bookingForm input[type="date"]::-webkit-calendar-picker-indicator{filter:brightness(0) invert(1);opacity:1;cursor:pointer;}
+
+/* Accessible booking date selection with disabled unavailable days */
+.booking-calendar{margin:8px 0 16px;padding:12px;background:#242933;border:1px solid #687184;border-radius:12px;color:#fff}
+.booking-calendar[hidden]{display:none}
+.booking-calendar-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.booking-calendar-header button{background:#3c4250;color:#fff;border:1px solid #8b94a5;border-radius:8px;min-width:42px;min-height:42px;font-size:24px}
+.booking-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.booking-calendar-grid b{font-size:11px;padding:8px 0;color:#d2d6e0}
+.booking-calendar-grid button{min-width:0;min-height:42px;border:1px solid #778197;border-radius:7px;background:#3d4658;color:#fff;font-size:15px}
+.booking-calendar-grid button:disabled{background:#191c24;color:#828997;border-color:#323744;text-decoration:line-through;opacity:.65}
+.booking-calendar-grid button:not(:disabled):focus-visible{outline:3px solid #b775ff;outline-offset:1px}
+.booking-calendar small{display:block;color:#c9d0dc;margin-top:10px}
+#bookingForm input[readonly]{cursor:pointer;color:#fff}
+
+/* Keep account buttons their original size while moving them near the header. */
+.account-shortcuts{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--line)}
+.account-shortcuts:empty{display:none}
+.account-shortcuts .account-shortcut{margin:0;flex:none;width:auto}
+
+/* Owner dashboard overview */
+.owner-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}
+.owner-stat{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:14px 10px;display:flex;flex-direction:column;gap:4px}
+.owner-stat strong{font-size:25px;color:var(--orange2);line-height:1.1}
+.owner-stat span{font-size:12px;color:var(--muted)}
+.owner-requests{display:grid;gap:8px}
+.owner-request{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px}
+.owner-request small{display:block;color:var(--muted);margin-top:4px}
+.owner-filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.owner-filters [aria-pressed="true"]{border-color:var(--orange);background:var(--panel2)}
+.owner-listing[hidden]{display:none!important}
+
+.account-shortcuts .account-shortcut[hidden]{display:none!important}
+
+.owner-request{flex-wrap:wrap}.owner-request-actions{display:flex;gap:7px;flex-wrap:wrap}.owner-request-actions button{min-height:40px}
+
+.action-notice{position:fixed;top:max(18px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 28px);z-index:2147483647;display:flex;align-items:center;gap:12px;background:#163627;color:#f3fff6;border:1px solid #45b97a;border-radius:14px;padding:14px 15px;box-shadow:0 15px 45px #0009;font-size:14px;font-weight:700;line-height:1.35}
+.action-notice[hidden]{display:none!important}
+.action-notice[data-type="error"]{background:#4b2323;border-color:#ef7878;color:#fff4f4}
+.action-notice-icon{font-size:20px;flex:none}
+.action-notice-text{flex:1;min-width:0;overflow-wrap:anywhere}
+.action-notice button{background:transparent;border:0;color:inherit;font-size:23px;cursor:pointer;padding:0 2px}
+
+
+
+/* Search fields wrap cleanly as distance and operator filters grow. */
+.search-panel{grid-template-columns:repeat(3,minmax(0,1fr))}.search-panel .search-field{min-width:0}.search-panel .search-button{grid-column:1/-1}
+@media(max-width:780px){.search-panel{grid-template-columns:1fr}.search-panel .search-button{grid-column:auto}}
+
+/* Accessible header account menu and profile editor */
+.menu-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:42px;min-height:42px;border:1px solid #414a54;border-radius:9px}
+.account-menu[hidden]{display:none!important}
+.account-menu{position:fixed;right:clamp(12px,5vw,80px);top:108px;z-index:40;min-width:220px;max-width:calc(100vw - 24px);padding:8px;background:#1b1630;border:1px solid #42365e;border-radius:12px;box-shadow:0 14px 35px #0009}
+.account-menu button{display:block;width:100%;text-align:left;border:0;border-radius:7px;padding:13px;background:transparent;color:#f5f1ff}
+.account-menu button:hover,.account-menu button:focus-visible{background:#342b50}
+#settingsForm textarea{display:block;width:100%;padding:13px;background:#0d1014;color:white;border:1px solid #444b55;border-radius:9px;font:inherit}
+#settingsForm .button{margin-top:12px}
+
+/* Owner dashboard action palette: clear, colorful, touch-friendly. */
+.owner-listing{box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.owner-listing button,.owner-rate-renter{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:43px;margin:5px 5px 5px 0;padding:10px 14px;border:1px solid transparent;border-radius:10px;font-weight:750;font-size:13px;line-height:1.25;transition:filter .15s,transform .15s,box-shadow .15s}
+.owner-listing button:hover,.owner-rate-renter:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.owner-listing button:focus-visible,.owner-rate-renter:focus-visible{outline:3px solid #e9d5ff;outline-offset:3px}
+.owner-listing button:disabled,.owner-rate-renter:disabled{opacity:.55;cursor:not-allowed}
+.owner-listing .edit-listing{background:#5034a6;color:#fff;border-color:#9c83ef}
+.owner-listing .manage-booking-dates{background:#155e75;color:#ecfeff;border-color:#22b8d6}
+.owner-listing .edit-listing-photos{background:#854d0e;color:#fff7db;border-color:#f6b74c}
+.owner-listing .publish-listing{background:#166534;color:#effff2;border-color:#4ade80}
+.owner-listing .unpublish-listing{background:#8c3146;color:#fff1f2;border-color:#fb7185}
+.owner-rate-renter{background:#6d4b13;color:#fff7df;border-color:#eab308}
+.owner-request-actions .owner-respond[data-approve="true"]{background:#166534;color:#f0fff4;border:1px solid #4ade80}
+.owner-request-actions .owner-respond[data-approve="false"]{background:#8c3146;color:#fff1f2;border:1px solid #fb7185}
+.owner-request-actions .manage-booking-dates{background:#155e75;color:#ecfeff;border:1px solid #22b8d6}
+.owner-request-actions button{border-radius:9px;font-weight:750}
+.owner-filters button{min-height:39px}
+.owner-filters button[aria-pressed="true"]{background:#5136a1;color:white;border-color:#b79aff}
+@media(max-width:480px){.owner-listing button{width:100%;margin:5px 0}.owner-request-actions{width:100%}.owner-request-actions button{flex:1 1 auto}}
+
+/* Custom owner listing editor */
+.listing-editor-backdrop{z-index:10010}
+.listing-editor-panel{max-width:580px!important;max-height:90dvh;overflow-y:auto;padding:26px}
+.listing-editor-panel h2{color:#e8d6ff}
+.listing-editor-panel label{display:block;margin:14px 0 6px;font-size:13px;font-weight:750;color:#e7e0f6}
+.listing-editor-panel input,.listing-editor-panel textarea,.listing-editor-panel select{width:100%;min-height:44px;padding:12px;border:1px solid #685684;border-radius:10px;background:#110f1d;color:#fff;font:inherit}
+.listing-editor-panel textarea{resize:vertical;min-height:115px}
+.listing-editor-panel input:focus,.listing-editor-panel textarea:focus,.listing-editor-panel select:focus{outline:2px solid #bb86fc;outline-offset:1px}
+.listing-editor-prices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.listing-editor-hint{margin:14px 0 8px!important;padding:12px;border:1px solid #725b37;border-radius:10px;background:#2c2419;color:#ffe5b5!important;font-size:12px}
+.listing-editor-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:15px}
+.listing-editor-actions .listing-editor-save{background:#6e3bba;color:white}
+.listing-editor-actions .listing-editor-cancel{border-color:#7d668d}
+#editListingMessage:not(:empty){font-size:13px;color:#f2d1a6}
+@media(max-width:480px){.listing-editor-prices{grid-template-columns:1fr}.listing-editor-actions button{flex:1}}
+
+/* Approved booking history and renter profile */
+.approved-bookings-section{margin:16px 0;border:1px solid #69538f;border-radius:14px;overflow:hidden;background:#201934}
+.approved-bookings-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;padding:15px 17px;border:0;background:#48317d;color:#fff;font-weight:800;text-align:left;font-size:15px}
+.approved-bookings-toggle:hover{background:#604398}
+.approved-bookings-toggle[aria-expanded="true"] .approved-chevron{transform:rotate(180deg)}
+#approvedBookingsList{padding:12px;display:grid;gap:10px}
+#approvedBookingsList[hidden]{display:none!important}
+.approved-booking-card{padding:14px;border:1px solid #5b4a78;border-radius:12px;background:#161324}
+.approved-booking-card strong{color:#e9d9ff}
+.approved-booking-card p{margin:6px 0;color:#d2c9e1;font-size:13px}
+.approved-renter-profile{margin-top:8px;background:#4b3494!important;color:white!important;border-color:#9d80e7!important;min-height:43px}
+.approved-renter-backdrop{z-index:10012}
+.approved-renter-panel{max-width:440px!important}
+.renter-profile-avatar{display:grid;place-items:center;width:65px;height:65px;border-radius:50%;background:#4b3494;font-size:31px}
+.renter-profile-rating{color:#f7d477!important;font-weight:750}
+.renter-profile-privacy{font-size:12px;color:#c7bcd8!important}
+.approved-profile-back{margin-top:14px}
+
+/* Renter rental history action */
+.renter-view-owner{margin:10px 0 0 8px;min-height:42px;border:1px solid #9d80e7!important;border-radius:9px;background:#4b3494!important;color:#fff!important;font-weight:750}
+.renter-view-owner:hover{filter:brightness(1.15)}
+@media(max-width:480px){.renter-view-owner{display:block;width:100%;margin:10px 0 0}}
+
+/* Owner storefront and opt-in contact settings */
+.profile-privacy-controls{margin:12px 0;display:grid;gap:8px;padding:12px;border:1px solid #635182;border-radius:10px;background:#211a31}
+.profile-privacy-controls label{display:flex!important;align-items:center;gap:10px;font-size:14px}
+.profile-privacy-controls input{width:20px!important;min-width:20px;height:20px;accent-color:#a779ff}
+.profile-privacy-help{font-size:12px;color:#cfc1e3}
+.public-owner-backdrop{z-index:10015}
+.public-owner-panel{max-width:680px!important;max-height:90dvh;overflow-y:auto}
+.public-owner-intro{padding:15px;border:1px solid #584577;border-radius:12px;background:#221a35;margin:12px 0}
+.public-owner-intro p{overflow-wrap:anywhere}
+.public-owner-intro a{color:#cbb0ff}
+.public-owner-listings{display:grid;gap:12px}
+.public-owner-card{display:flex;gap:13px;padding:12px;border:1px solid #5c4a79;border-radius:12px;background:#161324}
+.public-owner-card img{width:116px;height:104px;object-fit:cover;border-radius:8px;flex:none}
+.public-owner-card>div{min-width:0;flex:1}
+.public-owner-card p{margin:5px 0;color:#d2c8e3}
+.public-owner-card button{margin-top:6px}
+.listing-owner-link{margin:12px 0}
+.listing-owner-link button{background:#4b3494;color:#fff;border-color:#a48be9}
+@media(max-width:480px){.public-owner-card{flex-direction:column}.public-owner-card img{width:100%;height:150px}}
+
+/* Mobile-friendly account settings: scroll the dialog, never the page */
+body.account-settings-open{overflow:hidden!important}
+.account-settings-backdrop:not([hidden]){position:fixed!important;inset:0!important;z-index:10030!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:12px!important;overflow:hidden!important;overscroll-behavior:contain}
+.account-settings-backdrop[hidden]{display:none!important}
+.account-settings-panel{position:relative!important;display:flex!important;flex-direction:column!important;width:min(100%,520px)!important;max-height:calc(100dvh - 24px)!important;min-height:0!important;margin:0 auto!important;overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:20px!important}
+.account-settings-panel .auth-close{position:sticky!important;top:0!important;align-self:flex-end!important;z-index:5!important;flex-shrink:0!important;background:#39295d!important;border-radius:50%!important}
+.account-settings-panel #settingsForm{padding-bottom:max(20px,env(safe-area-inset-bottom));}
+.account-settings-panel #settingsForm button[type="submit"]{display:block;min-height:48px;width:100%;margin-top:14px;margin-bottom:8px}
+@media(max-width:480px){.account-settings-backdrop:not([hidden]){padding:8px!important}.account-settings-panel{max-height:calc(100dvh - 16px)!important;padding:16px!important}}
+
+/* Stripe identity verification call-to-action and completed state */
+#verifyIdentity{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:49px;width:100%;margin:12px 0;padding:13px 18px;border:1px solid #bb94ff;border-radius:12px;background:linear-gradient(135deg,#6931c6,#9b4ee7);color:#fff;font-size:15px;font-weight:800;letter-spacing:.15px;box-shadow:0 5px 20px #7a3bd040;transition:filter .15s,transform .15s}
+#verifyIdentity:not(:disabled):hover{filter:brightness(1.13);transform:translateY(-1px)}
+#verifyIdentity:disabled:not(.is-verified){opacity:.65;cursor:not-allowed}
+#verifyIdentity.is-verified,#verifyIdentity.is-verified:disabled{background:#164d39!important;border-color:#48c78e!important;color:#e1ffef!important;box-shadow:none!important;opacity:1!important;cursor:default!important;transform:none!important}

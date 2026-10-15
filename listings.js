@@ -10,11 +10,14 @@
   }
 
   const categories = [
-    ["car", "Cars"],
-    ["truck", "Trucks"],
     ["trailer", "Trailers"],
-    ["rv", "RVs & Campers"],
-    ["equipment", "Heavy Equipment"]
+    ["rv", "Campers"],
+    ["equipment", "Heavy Equipment"],
+    ["light_equipment", "Light Equipment"],
+    ["boat", "Boats"],
+    ["atv_utv", "ATVs / UTVs"],
+    ["jetski", "Jet Skis / Personal Watercraft"],
+    ["paddlecraft", "Kayaks, Canoes & Paddleboards"]
   ];
 
   const modal = document.createElement("div");
@@ -60,6 +63,13 @@
         <input id="rentalPrice" type="number"
                min="1" step="0.01" required>
 
+        <label for="rentalHourly">Price per hour ($, optional)</label>
+        <input id="rentalHourly" type="number" min="0.01" step="0.01" placeholder="Leave blank if daily rentals only">
+
+        <label for="rentalOperator">Operator option</label>
+        <select id="rentalOperator" style="width:100%;padding:13px;background:#0d1014;color:white"><option value="without_operator">Without operator</option><option value="operator_available">Operator available upon request</option><option value="operator_required">Operator required / included by owner</option></select>
+        <small>Operator arrangements and charges must be agreed with the owner. Do not assume an operator is included in the listed rate.</small>
+
         <label for="rentalImage">Photo URL (optional)</label>
         <input id="rentalImage" type="url"
                placeholder="https://example.com/photo.jpg">
@@ -98,9 +108,13 @@
       return;
     }
 
+    const {data:role,error:roleError}=await client.from("account_roles").select("account_type").eq("user_id",data.user.id).maybeSingle();
+    if(roleError||role?.account_type!=="owner"){alert("Only Owner accounts can create listings. Open My Account and select Become an Owner first.");return;}
     message.textContent = "";
     modal.hidden = false;
   }
+
+  window.FlexiRentNewListing={open:openForm};
 
   document.getElementById("listTop")
     ?.addEventListener("click", openForm);
@@ -166,6 +180,8 @@
         document.getElementById("rentalPrice").value
       ),
       image_url: document.getElementById("rentalImage").value.trim() || null,
+      price_per_hour: document.getElementById("rentalHourly").value ? Number(document.getElementById("rentalHourly").value) : null,
+      operator_option: document.getElementById("rentalOperator").value,
       status: "draft"
     };
 
@@ -243,6 +259,8 @@
 
 
       message.textContent = "Listing saved successfully!";
+      window.FlexiRentNotice?.show("New listing saved as draft!");
+      window.dispatchEvent(new Event("flexirent:listing-created"));
       form.reset();
     } catch (error) {
       message.textContent = error.message ||

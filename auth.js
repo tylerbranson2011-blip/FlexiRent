@@ -31,6 +31,11 @@
       <h2 id="authTitle">Welcome to Flexi Rent</h2>
       <p id="authSubtitle">Sign in to your account.</p>
 
+      <div id="accountOverview" hidden>
+        <p id="accountVerification"></p>
+        <button id="verifyIdentity" type="button">Verify identity with Stripe</button>
+        <button id="becomeOwner" type="button" hidden>Become an Owner</button>
+      </div>
       <form id="authForm">
         <label for="authEmail">Email address</label>
         <input id="authEmail" type="email"
@@ -40,6 +45,15 @@
         <input id="authPassword" type="password"
                autocomplete="current-password"
                minlength="6" required>
+
+        <div id="accountTypeGroup" hidden>
+          <label for="accountType">I want to join as</label>
+          <select id="accountType" required disabled>
+            <option value="renter">Renter · Find and book rentals</option>
+            <option value="owner">Owner · List and manage rentals</option>
+          </select>
+          <p class="account-type-note">You can rent and list with the same account later. This choice sets your starting experience.</p>
+        </div>
 
         <p id="authMessage" role="status"
            aria-live="polite"></p>
@@ -95,7 +109,7 @@
       margin: 14px 0 7px;
       font-size: 14px;
     }
-    .auth-panel input {
+    .auth-panel input, .auth-panel select {
       display: block;
       width: 100%;
       box-sizing: border-box;
@@ -106,6 +120,8 @@
       border-radius: 9px;
       font-size: 16px;
     }
+    .auth-panel .account-type-note {font-size:12px;margin:8px 0 0;}
+    #becomeOwner {background:#ff633f;color:#111;border:0;border-radius:9px;padding:12px;font-weight:800;cursor:pointer;}
     #authSubmit {
       width: 100%;
       margin-top: 18px;
@@ -151,19 +167,94 @@
   const submit = document.getElementById("authSubmit");
   const switchButton = document.getElementById("authSwitch");
   const password = document.getElementById("authPassword");
+  const accountTypeGroup = document.getElementById("accountTypeGroup");
+  const accountType = document.getElementById("accountType");
+  const overview = document.getElementById("accountOverview");
+  const verification = document.getElementById("accountVerification");
+  const becomeOwner = document.getElementById("becomeOwner");
+  const verifyIdentity = document.getElementById("verifyIdentity");
+  verifyIdentity.addEventListener("click", async () => {
+    if(verifyIdentity.dataset.verified==="true")return;
+    verifyIdentity.disabled = true;
+    message.textContent = "Starting secure Stripe verification...";
+    try {
+      const {data,error} = await client.functions.invoke("start-identity-verification", {body:{}});
+      if(error) throw error;
+      if(!data?.url || !data.url.startsWith("https://verify.stripe.com/")) throw new Error(data?.error || "Verification is not configured yet.");
+      window.location.assign(data.url);
+    } catch(error) {message.textContent = error.message || "Verification unavailable. Try again later.";}
+    finally {if(verifyIdentity.dataset.verified!=="true")verifyIdentity.disabled = false;}
+  });
 
   let mode = "login";
+  let verificationRequest=0;
+  async function refreshVerificationStatus(userId,emailVerified){
+    const request=++verificationRequest;
+    verifyIdentity.disabled=true;
+    verifyIdentity.textContent="Checking verification...";
+    verifyIdentity.dataset.verified="false";
+    const {data,error}=await client.rpc("my_identity_verification_status");
+    if(request!==verificationRequest||currentUser?.id!==userId||overview.hidden)return;
+    if(!error&&data==="verified"){
+      verifyIdentity.dataset.verified="true";
+      verifyIdentity.textContent="✓ Identity Verified";
+      verifyIdentity.disabled=true;
+      verifyIdentity.classList.add("is-verified");
+      verification.textContent="Your identity has been verified with Stripe.";
+    }else{
+      verifyIdentity.dataset.verified="false";
+      verifyIdentity.textContent="🔒 Verify Identity with Stripe ↗";
+      verifyIdentity.classList.remove("is-verified");
+      verifyIdentity.disabled=!emailVerified;
+      verification.textContent=error?"Verification status could not be checked. Please try again.":!emailVerified?"Confirm your email before verifying your identity.":data==="processing"||data==="requires_input"?"Stripe verification is in progress or needs attention.":"Verify your identity securely with Stripe.";
+    }
+  }
+  function showOverview() {
+    if (!currentUser) return;
+    const emailVerified = Boolean(currentUser.email_confirmed_at || currentUser.confirmed_at);
+    form.hidden = true;
+    switchButton.hidden = true;
+    overview.hidden = false;
+    title.textContent = "My Flexi Rent Account";
+    subtitle.textContent = currentUser.email || "Account";
+    verifyIdentity.disabled=true;
+    verifyIdentity.textContent="Checking verification...";
+    refreshVerificationStatus(currentUser.id,emailVerified);
+    becomeOwner.hidden = currentUser.user_metadata?.account_type === "owner";
+    message.textContent = "";
+  }
+  becomeOwner.addEventListener("click", async () => {
+    becomeOwner.disabled = true;
+    message.textContent = "Updating account...";
+    try {
+      const roleResult = await client.rpc("become_flexirent_owner");
+      if(roleResult.error) throw roleResult.error;
+      const {data,error} = await client.auth.updateUser({data:{account_type:"owner"}});
+      if (error) throw error;
+      currentUser = data.user;
+      updateHeader();
+      showOverview();
+      window.dispatchEvent(new Event("flexirent:account-role-changed"));
+      message.textContent = "Owner option enabled. Identity verification is still required before listing rentals.";
+    } catch (error) {message.textContent = error.message || "Unable to update account.";}
+    finally {becomeOwner.disabled = false;}
+  });
   let currentUser = null;
 
   function setMode(nextMode) {
     mode = nextMode;
+    form.hidden = false;
+    overview.hidden = true;
+    switchButton.hidden = false;
     form.reset();
+    accountTypeGroup.hidden = mode !== "signup";
+    accountType.disabled = mode !== "signup";
     message.textContent = "";
     title.textContent =
       mode === "signup" ? "Create your account" : "Welcome back";
     subtitle.textContent =
       mode === "signup"
-        ? "Join Flexi Rent to rent or list your ride."
+        ? "Choose how you want to get started on Flexi Rent."
         : "Log in to your Flexi Rent account.";
     submit.textContent =
       mode === "signup" ? "Create Account" : "Log In";
@@ -188,7 +279,8 @@
   function updateHeader() {
     if (currentUser) {
       loginButton.textContent = "Log Out";
-      signupButton.textContent = "My Account";
+      const type = currentUser.user_metadata?.account_type;
+      signupButton.textContent = type === "owner" ? "Owner Account" : type === "renter" ? "Renter Account" : "My Account";
     } else {
       loginButton.textContent = "Log In";
       signupButton.textContent = "Sign Up";
@@ -211,7 +303,8 @@
 
   signupButton.addEventListener("click", () => {
     if (currentUser) {
-      alert("Signed in as " + currentUser.email);
+      modal.hidden = false;
+      showOverview();
     } else {
       openModal("signup");
     }
@@ -247,7 +340,8 @@
           email,
           password: pass,
           options: {
-            emailRedirectTo: window.location.origin
+            emailRedirectTo: window.location.origin,
+            data: { account_type: accountType.value }
           }
         });
 
