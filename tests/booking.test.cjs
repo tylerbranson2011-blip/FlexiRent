@@ -9,6 +9,7 @@ const dashboard=fs.readFileSync("dashboard.js","utf8");
 const booking=fs.readFileSync("booking.js","utf8");
 assert.match(html,/src="booking.js"/);
 assert.match(app,/FlexiRentBooking\?\.open\(item\.id\)/);
+assert.match(app,/closeDetails\(\);window\.FlexiRentBooking/);
 assert.match(dashboard,/manage-booking-dates/);
 assert.match(sql,/pg_advisory_xact_lock/g);
 assert.match(sql,/expires_at<=now\(\)/);
