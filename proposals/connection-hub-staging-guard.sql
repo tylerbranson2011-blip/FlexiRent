@@ -29,7 +29,7 @@ create policy "consent_insert_self" on public.marketplace_consents
  user_id = (select auth.uid()) and
  exists (select 1 from auth.users u where u.id=(select auth.uid()) and u.email_confirmed_at is not null)
  );
--- No UPDATE or DELETE policies/grants. Records are immutable to Data API users.
+-- No UPDATE or DELETE policies/grants. Records are immutable to Data API users.\n-- SECURITY REVIEW: direct inserts can spoof accepted_at and policy_version.\n-- Replace direct insert access with a narrow server-controlled acceptance RPC before launch.
 -- The status guard below prevents publishing without consent even with legacy
 -- permissive owner UPDATE policies. It also applies to inserts and RPC writes.
 create or replace function public.connection_hub_publish_guard()
