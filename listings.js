@@ -13,7 +13,10 @@
     ["trailer", "Trailers"],
     ["rv", "Campers"],
     ["equipment", "Heavy Equipment"],
-    ["light_equipment", "Light Equipment"]
+    ["light_equipment", "Light Equipment"],
+    ["boat", "Boats"],
+    ["jetski", "Jet Skis / Personal Watercraft"],
+    ["paddlecraft", "Kayaks, Canoes & Paddleboards"]
   ];
 
   const modal = document.createElement("div");
