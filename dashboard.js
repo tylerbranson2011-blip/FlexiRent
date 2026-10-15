@@ -230,7 +230,7 @@ ${item.status === "published" ? `
     }
 
     const confirmed = confirm(
-      "Publish this rental publicly? Anyone visiting Flexi Rent will be able to see its details and listed price. Bookings and payments are not enabled."
+      "Publish this rental publicly? Anyone visiting Flexi Rent will be able to see its details and listed price. Booking requests are enabled, but payments are not enabled."
     );
 
     if (!confirmed) return;
