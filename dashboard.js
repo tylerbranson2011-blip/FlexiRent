@@ -10,12 +10,11 @@
   button.id = "myListingsButton";
   button.className = "button button-ghost";
   button.textContent = "My Listings";
-  button.style.margin = "12px 17px";
+  button.classList.add("account-shortcut");
 
-  const section = document.getElementById("list");
-  if (!section) return;
-
-  section.insertAdjacentElement("beforebegin", button);
+  const shortcuts = document.getElementById("accountShortcuts");
+  if (!shortcuts) return;
+  shortcuts.appendChild(button);
 
   // Create the dashboard popup.
   const modal = document.createElement("div");
