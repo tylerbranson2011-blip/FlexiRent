@@ -58,28 +58,28 @@
         <div class="art-tag tag-bottom"><span class="tag-icon">✦</span><span><b>More freedom.</b><small>Less hassle.</small></span></div>
         <div class="art-number">FR / 001</div>
       </div>
-      <div class="hero-bottom-line"><span>VEHICLES</span><span>TRAILERS</span><span>RV & CAMPERS</span><span>AND MORE TO COME</span></div>
+      <div class="hero-bottom-line"><span>TRAILERS</span><span>TOWABLE CAMPERS</span><span>EQUIPMENT</span><span>DIRECT OWNER CONTACT</span></div>
     </section>
 
     <section class="search-section" id="browse">
       <div class="section-heading"><div><div class="eyebrow">FIND YOUR NEXT RIDE</div><h2>What are you looking for?</h2></div><span class="result-note">SAMPLE LISTINGS · DEMO MODE</span></div>
       <form class="search-panel" id="searchForm">
         <label class="search-field"><span>LOCATION</span><div class="input-wrap"><span>⌖</span><input id="location" placeholder="City or ZIP code" autocomplete="postal-code"></div></label>
-        <label class="search-field"><span>RENTAL TYPE</span><div class="input-wrap"><span>▦</span><select id="category"><option value="all">All vehicles & trailers</option><option value="car">Cars</option><option value="truck">Trucks</option><option value="trailer">Trailers</option><option value="rv">RVs & campers</option></select></div></label>
+        <label class="search-field"><span>RENTAL TYPE</span><div class="input-wrap"><span>▦</span><select id="category"><option value="all">All supported categories</option><option value="trailer">Trailers</option><option value="rv">Towable campers</option><option value="equipment">Equipment</option></select></div></label>
         <label class="search-field"><span>MAX PRICE / DAY</span><div class="input-wrap"><span>$</span><select id="price"><option value="9999">Any price</option><option value="50">$50</option><option value="100">$100</option><option value="150">$150</option><option value="250">$250</option></select></div></label>
         <button class="button button-primary search-button" type="submit">Search <span>⌕</span></button>
       </form>
       <div class="category-row" id="categoryPills" aria-label="Filter by category">
-        <button class="category-pill active" data-category="all"><span>✦</span> All rides</button>
-        <button class="category-pill" data-category="car"><span>🚘</span> Cars</button>
-        <button class="category-pill" data-category="truck"><span>🛻</span> Trucks</button>
+        <button class="category-pill active" data-category="all"><span>✦</span> All eligible gear</button>
+        
+        
         <button class="category-pill" data-category="trailer"><span>▰</span> Trailers</button>
-        <button class="category-pill" data-category="rv"><span>⌂</span> RVs & campers</button>
+        <button class="category-pill" data-category="rv"><span>⌂</span> Towable campers</button><button class="category-pill" data-category="equipment"><span>⚙</span> Equipment</button>
       </div>
       <div class="listing-toolbar"><div><h3>Ready when you are.</h3><p id="resultsText">Hand-picked examples to show you how Flexi Rent will work.</p></div><label class="sort-control">SORT BY <select id="sort"><option value="recommended">Recommended</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select></label></div>
       <div class="listing-grid" id="listingGrid"></div>
       <div class="empty-state hidden" id="emptyState"><div>⌕</div><h3>No rides found</h3><p>Try another category, location, or price limit.</p><button class="button button-ghost" id="resetFilters">Reset filters</button></div>
-      <p class="demo-disclaimer">These are fictional sample listings for the prototype. No vehicle is currently available to book.</p>
+      <p class="demo-disclaimer">Only owner-posted eligible listings should appear here. Flexi Rent does not verify safety, ownership or insurance. Contact is not a booking.</p>
     </section>
 
     <section class="how-section" id="how">
@@ -92,7 +92,7 @@
       <button class="button button-light" id="listBottom">I'm ready to list <span>↗</span></button>
       <div class="cta-decoration">FR<span>+</span></div>
     </section>
-  </main>
+  <section class="how-section" id="responsibilities"><div class="eyebrow">BEFORE YOU CONNECT</div><h2>Know who is responsible.</h2><p>Owners self-certify their right to list, safety and insurance responsibilities. Renters must independently verify the equipment and insurance, and both parties agree directly on payments, deposits, cancellations and damage. Flexi Rent does not inspect equipment, provide insurance or process rental payments.</p><p><a href="legal.html#owner">Owner responsibilities</a> · <a href="legal.html#renter">Renter responsibilities</a> · <a href="legal.html#safety">Safety standards</a></p></section></main>
 
   <footer class="site-footer"><a class="brand" href="#"><span class="brand-mark">F</span><span>FLEXI<span class="accent">RENT</span></span></a><span>More freedom. Less hassle.</span><span>© <span id="year"></span> Flexi Rent · Connection hub · Draft policies</span><a href="legal.html">Marketplace Terms · Owner Terms · Renter Terms · Privacy · Safety</a></footer>
 
