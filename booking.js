@@ -16,20 +16,20 @@ shell.addEventListener("click",e=>{if(e.target===shell)close();});
 async function refresh(){
  if(!listingId)return;
  const id=listingId;
- const [b,r]=await Promise.all([
+ const [b,r,a]=await Promise.all([
  client.from("listing_blocks").select("id,start_date,end_date").eq("listing_id",id).order("start_date"),
- client.from("booking_requests").select("id,start_date,end_date,status,expires_at,renter_id").eq("listing_id",id).order("created_at",{ascending:false})
+ client.from("booking_requests").select("id,start_date,end_date,status,expires_at,renter_id").eq("listing_id",id).order("created_at",{ascending:false}),
+ client.rpc("listing_unavailable_dates",{p_listing:id})
  ]);
  if(id!==listingId)return;
- if(b.error||r.error){body.textContent=(b.error||r.error).message;return;}
+ if(b.error||r.error||a.error){body.textContent=(b.error||r.error||a.error).message;return;}
  const blocks=b.data||[],requests=r.data||[];
- const busy=requests.filter(x=>x.status==="approved"||(x.status==="pending"&&new Date(x.expires_at)>new Date()));
- const dates=[...blocks.map(x=>({id:x.id,start:x.start_date,end:x.end_date,label:"Owner blocked"})),...busy.map(x=>({start:x.start_date,end:x.end_date,label:x.status==="approved"?"Reserved":"Pending request"}))];
+ const dates=[...blocks.map(x=>({id:x.id,start:x.start_date,end:x.end_date,label:"Owner blocked"})),...(a.data||[]).filter(x=>x.reason==="reserved").map(x=>({start:x.start_date,end:x.end_date,label:"Unavailable"}))];
  body.innerHTML='<h3>Unavailable dates</h3>'+(dates.length?'<ul>'+dates.map(x=>'<li>'+esc(x.start)+' to '+esc(x.end)+' ('+esc(x.label)+')'+(ownerMode&&x.id?' <button type="button" data-unblock="'+esc(x.id)+'" aria-label="Unblock '+esc(x.start)+' to '+esc(x.end)+'">Unblock dates</button>':'')+'</li>').join("")+'</ul>':'<p>No dates blocked yet.</p>')+
  '<form id="bookingForm"><label>Pickup date <input type="date" name="start" required></label><label>Return date <input type="date" name="end" required></label><button class="button button-primary" type="submit">'+(ownerMode?"Block dates":"Request booking")+'</button></form>'+
  (ownerMode?'<h3>Booking requests</h3>'+(requests.length?requests.map(x=>'<div class="booking-request"><p>'+esc(x.start)+' to '+esc(x.end)+' · '+esc(x.status==="pending"&&new Date(x.expires_at)<=new Date()?"expired":x.status)+'</p>'+(x.status==="pending"&&new Date(x.expires_at)>new Date()?'<button data-respond="'+esc(x.id)+'" data-approve="true">Approve</button> <button data-respond="'+esc(x.id)+'" data-approve="false">Decline</button>':'')+'</div>').join(""):'<p>No requests yet.</p>'):'<p>Owners have 24 hours to approve. Unanswered requests expire automatically.</p>');
  const form=body.querySelector("#bookingForm");
- form.elements.start.min=new Date().toLocaleDateString("en-CA");
+ form.elements.start.min=[new Date().getFullYear(),String(new Date().getMonth()+1).padStart(2,"0"),String(new Date().getDate()).padStart(2,"0")].join("-");
  form.elements.end.min=form.elements.start.min;
  form.addEventListener("submit",async e=>{
  e.preventDefault();const start=form.elements.start.value,end=form.elements.end.value;
