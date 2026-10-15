@@ -14,6 +14,9 @@ Deno.serve(async req=>{
  if(!userId||session.client_reference_id!==userId)return new Response("Invalid user reference",{status:400});
  const status=event.type==="identity.verification_session.verified"?"verified":event.type==="identity.verification_session.canceled"?"canceled":"needs_retry";
  const db=createClient(url,dbKey);
+ const {data:existing,error:readError}=await db.from("identity_verifications").select("status,stripe_session_id").eq("user_id",userId).maybeSingle();
+ if(readError)return new Response("Unable to check verification",{status:500});
+ if(existing?.status==="verified" && status!=="verified")return Response.json({ok:true});
  const {error}=await db.from("identity_verifications").upsert({user_id:userId,stripe_session_id:session.id,status,verified_at:status==="verified"?new Date().toISOString():null},{onConflict:"user_id"});
  if(error)return new Response("Unable to record verification",{status:500});
  return Response.json({ok:true});
