@@ -29,6 +29,7 @@ async function open(){
  if(request!==generation||shell.hidden)return;
  if(error){area.textContent="Unable to load rentals: "+error.message;return;}
  if(!bookings?.length){area.innerHTML="<p>You haven't requested a rental yet. Browse listings to get started!</p>";return;}
+ const eligible=await window.FlexiRentReviews?.eligibility(bookings,"renter",user.id)||new Set();
  const ids=[...new Set(bookings.map(b=>b.listing_id).filter(Boolean))];
  const {data:listingData,error:listingError}=ids.length?await client.from("listings").select("id,title,category").in("id",ids):{data:[],error:null};
  if(request!==generation||shell.hidden)return;
@@ -43,10 +44,11 @@ async function open(){
  '<p style="margin:4px 0">Pickup: '+esc(date(b.start_date))+' at '+esc(time(b.pickup_time))+'</p>'+
  '<p style="margin:4px 0">Return: '+esc(date(b.end_date))+' at '+esc(time(b.return_time))+'</p>'+
  (b.booking_timezone?'<p style="margin:4px 0">Time zone: '+esc(b.booking_timezone)+'</p>':'')+
- '<button type="button" class="button button-primary" data-view-listing="'+esc(b.listing_id)+'" style="margin-top:10px">View Listing ↗</button></article>';
+ '<button type="button" class="button button-primary" data-view-listing="'+esc(b.listing_id)+'" style="margin-top:10px">View Listing ↗</button>'+ (eligible.has(b.id)?'<button type="button" class="button button-ghost" data-rate-booking="'+esc(b.id)+'">⭐ Rate owner</button>':'')+'</article>';
  }).join("");
 }
 area.addEventListener("click",async e=>{
+ const rate=e.target.closest("[data-rate-booking]");if(rate){window.FlexiRentReviews?.open(rate.dataset.rateBooking,open);return;}
  const b=e.target.closest("[data-view-listing]");if(!b)return;
  if(!window.FlexiRentListing?.open){area.insertAdjacentHTML("afterbegin","<p>Listing details are unavailable. Refresh the page.</p>");return;}
  close();await window.FlexiRentListing.open(b.dataset.viewListing);
