@@ -113,6 +113,8 @@
     modal.hidden = false;
   }
 
+  window.FlexiRentNewListing={open:openForm};
+
   document.getElementById("listTop")
     ?.addEventListener("click", openForm);
 
@@ -256,6 +258,8 @@
 
 
       message.textContent = "Listing saved successfully!";
+      window.FlexiRentNotice?.show("New listing saved as draft!");
+      window.dispatchEvent(new Event("flexirent:listing-created"));
       form.reset();
     } catch (error) {
       message.textContent = error.message ||
