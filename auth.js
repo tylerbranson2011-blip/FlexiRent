@@ -203,6 +203,8 @@
     becomeOwner.disabled = true;
     message.textContent = "Updating account...";
     try {
+      const roleResult = await client.rpc("become_flexirent_owner");
+      if(roleResult.error) throw roleResult.error;
       const {data,error} = await client.auth.updateUser({data:{account_type:"owner"}});
       if (error) throw error;
       currentUser = data.user;
