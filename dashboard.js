@@ -29,6 +29,7 @@
   window.addEventListener("flexirent:account-role-changed",syncOwnerButton);
   client.auth.onAuthStateChange(()=>{setTimeout(syncOwnerButton,0);});
   syncOwnerButton();
+  window.addEventListener("flexirent:listing-created",()=>{if(!modal.hidden)openDashboard();});
 
   // Create the dashboard popup.
   const modal = document.createElement("div");
@@ -100,7 +101,7 @@
     }
 
     if (!listings || listings.length === 0) {
-      content.textContent = "You have no listings yet.";
+      content.innerHTML = '<button type="button" class="button button-primary new-owner-listing">＋ New Listing</button><p>You have no listings yet.</p>';
       return;
     }
 
@@ -124,7 +125,7 @@
         const listing=listings.find(l=>l.id===r.listing_id);
         return '<div class="owner-request"><div><strong>'+escapeHTML(listing?.title||"Rental")+'</strong><small>'+escapeHTML(r.start_date)+' to '+escapeHTML(r.end_date)+' · '+escapeHTML(effectiveStatus(r))+'</small></div><div class="owner-request-actions"><button type="button" class="owner-respond button button-primary" data-request="'+escapeHTML(r.id)+'" data-approve="true">Approve</button><button type="button" class="owner-respond button button-ghost" data-request="'+escapeHTML(r.id)+'" data-approve="false">Decline</button><button type="button" class="manage-booking-dates button button-ghost" data-id="'+escapeHTML(r.listing_id)+'">Details</button></div></div>';
       }).join("")+'</div>':'<p>No pending booking requests.</p>');
-    content.innerHTML=summary+queue+'<h3>Your listings</h3><div class="owner-filters"><button type="button" class="button button-ghost" data-owner-filter="all" aria-pressed="true">All</button><button type="button" class="button button-ghost" data-owner-filter="published" aria-pressed="false">Published</button><button type="button" class="button button-ghost" data-owner-filter="draft" aria-pressed="false">Drafts</button></div>'+listings.map(item => `
+    content.innerHTML='<button type="button" class="button button-primary new-owner-listing">＋ New Listing</button>'+summary+queue+'<h3>Your listings</h3><div class="owner-filters"><button type="button" class="button button-ghost" data-owner-filter="all" aria-pressed="true">All</button><button type="button" class="button button-ghost" data-owner-filter="published" aria-pressed="false">Published</button><button type="button" class="button button-ghost" data-owner-filter="draft" aria-pressed="false">Drafts</button></div>'+listings.map(item => `
       <div class="owner-listing" data-listing-status="${escapeHTML(item.status)}" style="
         padding:15px;
         margin:12px 0;
@@ -331,6 +332,10 @@ ${item.status === "published" ? `
   }
 
   content.addEventListener("click", async event => {
+    if(event.target.closest(".new-owner-listing")){
+      if(window.FlexiRentNewListing?.open)await window.FlexiRentNewListing.open();
+      return;
+    }
     const response=event.target.closest(".owner-respond");
     if(response){
       const id=response.dataset.request,approve=response.dataset.approve==="true";
