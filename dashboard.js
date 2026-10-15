@@ -240,7 +240,7 @@ ${item.status === "published" ? `
       return;
     }
 
-    alert("Listing updated successfully!");
+    window.FlexiRentNotice?.show("Listing changes saved!");
     openDashboard();
   }
 
@@ -293,7 +293,7 @@ ${item.status === "published" ? `
       return;
     }
 
-    alert("Your listing is now published!");
+    window.FlexiRentNotice?.show("Listing published!");
     openDashboard();
   }
 
@@ -326,7 +326,7 @@ ${item.status === "published" ? `
       return;
     }
 
-    alert("Listing unpublished successfully!");
+    window.FlexiRentNotice?.show("Listing unpublished!");
     openDashboard();
   }
 
@@ -343,7 +343,7 @@ ${item.status === "published" ? `
       controls.forEach(b=>b.disabled=true);
       const result=await client.rpc("respond_booking",{p_request:id,p_approve:approve});
       if(result.error){alert("Could not update request: "+result.error.message);controls.forEach(b=>b.disabled=false);}
-      else{alert(approve?"Booking approved!":"Booking declined.");openDashboard();}
+      else{window.FlexiRentNotice?.show(approve?"Rental approved!":"Rental declined.");openDashboard();}
       return;
     }
 
