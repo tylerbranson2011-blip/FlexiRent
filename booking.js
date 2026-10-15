@@ -7,6 +7,7 @@ shell.className="auth-backdrop";shell.hidden=true;shell.style.zIndex="2147483646
 shell.innerHTML='<div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="bookingTitle" style="max-width:640px;max-height:90vh;overflow:auto"><button class="auth-close" type="button" aria-label="Close booking">×</button><h2 id="bookingTitle">Availability & Booking</h2><p>Dates use pickup inclusive, return exclusive. No payments are taken.</p><div id="bookingBody"></div><p id="bookingMessage" role="status" aria-live="polite"></p></div>';
 document.body.append(shell);
 const body=shell.querySelector("#bookingBody"),message=shell.querySelector("#bookingMessage");
+const notify=(text,error=false)=>{message.textContent=text;window.FlexiRentNotice?.show(text,error?"error":"success");};
 let listingId=null,ownerMode=false,previousDashboard=null;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const displayTime=s=>{const m=/^(\d{2}):(\d{2})/.exec(String(s||""));if(!m)return "Time not set";const h=Number(m[1]);return String(h%12||12)+":"+m[2]+" "+(h<12?"AM":"PM");};
@@ -43,7 +44,7 @@ async function refresh(){
   hours.addEventListener("submit",async e=>{
    e.preventDefault();
    const result=await client.rpc("set_listing_pickup_hours",{p_listing:id,p_timezone:hours.elements.timezone.value,p_open:hours.elements.open.value,p_close:hours.elements.close.value});
-   message.textContent=result.error?result.error.message:"Pickup hours saved.";
+   notify(result.error?result.error.message:"Pickup hours saved.",Boolean(result.error));
    if(!result.error)await refresh();
   });
  }else if(!ownerMode&&schedule){
@@ -99,10 +100,10 @@ async function refresh(){
  form.elements.end.min=form.elements.start.min;
  form.addEventListener("submit",async e=>{
  e.preventDefault();const start=form.elements.start.value,end=form.elements.end.value;
- if(!date(start)||!date(end)||end<=start){message.textContent="Return must be after pickup.";return;}
- const {data,error}=await client.auth.getUser();if(error||!data?.user){message.textContent="Please log in first.";return;}
+ if(!date(start)||!date(end)||end<=start){notify("Return must be after pickup.",true);return;}
+ const {data,error}=await client.auth.getUser();if(error||!data?.user){notify("Please log in first.",true);return;}
  const result=await client.rpc(ownerMode?"block_listing_dates":"request_booking_timed",ownerMode?{p_listing:id,p_start:start,p_end:end}:{p_listing:id,p_start:start,p_end:end,p_pickup:form.elements.pickup.value,p_return:form.elements.return.value});
- message.textContent=result.error?result.error.message:ownerMode?"Dates blocked.":"Request submitted. Owner has 24 hours to respond.";
+ notify(result.error?result.error.message:ownerMode?"Dates blocked.":"Rental request submitted! Owner has 24 hours to respond.",Boolean(result.error));
  if(!result.error)await refresh();
  });
  }
@@ -110,12 +111,12 @@ async function refresh(){
  if(!ownerMode||!confirm("Make these dates available again?"))return;
  button.disabled=true;
  const result=await client.rpc("unblock_listing_dates",{p_block:button.dataset.unblock});
- message.textContent=result.error?"Could not unblock dates: "+result.error.message:"Dates are available again.";
+ notify(result.error?"Could not unblock dates: "+result.error.message:"Dates are available again.",Boolean(result.error));
  await refresh();
  }));
  body.querySelectorAll("[data-respond]").forEach(button=>button.addEventListener("click",async()=>{
  const result=await client.rpc("respond_booking",{p_request:button.dataset.respond,p_approve:button.dataset.approve==="true"});
- message.textContent=result.error?result.error.message:"Request updated.";
+ notify(result.error?result.error.message:button.dataset.approve==="true"?"Rental approved!":"Rental declined.",Boolean(result.error));
  await refresh();
  }));
 }
