@@ -148,3 +148,5 @@ body {
 .owner-filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
 .owner-filters [aria-pressed="true"]{border-color:var(--orange);background:var(--panel2)}
 .owner-listing[hidden]{display:none!important}
+
+.account-shortcuts .account-shortcut[hidden]{display:none!important}
