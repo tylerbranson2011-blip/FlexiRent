@@ -7,10 +7,10 @@ shell.className="auth-backdrop";shell.hidden=true;shell.style.zIndex="2147483646
 shell.innerHTML='<div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="bookingTitle" style="max-width:640px;max-height:90vh;overflow:auto"><button class="auth-close" type="button" aria-label="Close booking">×</button><h2 id="bookingTitle">Availability & Booking</h2><p>Dates use pickup inclusive, return exclusive. No payments are taken.</p><div id="bookingBody"></div><p id="bookingMessage" role="status" aria-live="polite"></p></div>';
 document.body.append(shell);
 const body=shell.querySelector("#bookingBody"),message=shell.querySelector("#bookingMessage");
-let listingId=null,ownerMode=false;
+let listingId=null,ownerMode=false,previousDashboard=null;
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const date=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s+"T00:00:00Z"));
-function close(){shell.hidden=true;listingId=null;}
+function close(){shell.hidden=true;listingId=null;if(previousDashboard){previousDashboard.hidden=false;previousDashboard=null;}}
 shell.querySelector(".auth-close").onclick=close;
 shell.addEventListener("click",e=>{if(e.target===shell)close();});
 async function refresh(){
@@ -56,6 +56,9 @@ async function open(id,asOwner=false){
  const {data,error}=await client.auth.getUser();
  if(error||!data?.user){alert("Please log in to manage bookings.");return;}
  if(asOwner){const own=await client.from("listings").select("id").eq("id",id).eq("owner_id",data.user.id).maybeSingle();if(own.error||!own.data){alert("Not your listing.");return;}}
+ if(previousDashboard){previousDashboard.hidden=false;previousDashboard=null;}
+ previousDashboard=asOwner?document.querySelector('[aria-label="Close dashboard"]')?.closest(".auth-backdrop"):null;
+ if(previousDashboard)previousDashboard.hidden=true;
  listingId=id;ownerMode=asOwner;message.textContent="";shell.hidden=false;body.textContent="Loading availability...";await refresh();
 }
 window.FlexiRentBooking={open};
