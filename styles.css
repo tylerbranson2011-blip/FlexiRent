@@ -210,3 +210,21 @@ body {
 .listing-editor-actions .listing-editor-cancel{border-color:#7d668d}
 #editListingMessage:not(:empty){font-size:13px;color:#f2d1a6}
 @media(max-width:480px){.listing-editor-prices{grid-template-columns:1fr}.listing-editor-actions button{flex:1}}
+
+/* Approved booking history and renter profile */
+.approved-bookings-section{margin:16px 0;border:1px solid #69538f;border-radius:14px;overflow:hidden;background:#201934}
+.approved-bookings-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;padding:15px 17px;border:0;background:#48317d;color:#fff;font-weight:800;text-align:left;font-size:15px}
+.approved-bookings-toggle:hover{background:#604398}
+.approved-bookings-toggle[aria-expanded="true"] .approved-chevron{transform:rotate(180deg)}
+#approvedBookingsList{padding:12px;display:grid;gap:10px}
+#approvedBookingsList[hidden]{display:none!important}
+.approved-booking-card{padding:14px;border:1px solid #5b4a78;border-radius:12px;background:#161324}
+.approved-booking-card strong{color:#e9d9ff}
+.approved-booking-card p{margin:6px 0;color:#d2c9e1;font-size:13px}
+.approved-renter-profile{margin-top:8px;background:#4b3494!important;color:white!important;border-color:#9d80e7!important;min-height:43px}
+.approved-renter-backdrop{z-index:10012}
+.approved-renter-panel{max-width:440px!important}
+.renter-profile-avatar{display:grid;place-items:center;width:65px;height:65px;border-radius:50%;background:#4b3494;font-size:31px}
+.renter-profile-rating{color:#f7d477!important;font-weight:750}
+.renter-profile-privacy{font-size:12px;color:#c7bcd8!important}
+.approved-profile-back{margin-top:14px}
