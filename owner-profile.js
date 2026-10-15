@@ -22,6 +22,7 @@ async function open(ownerId){
  const contact=(p.email?'<p>✉️ <a href="mailto:'+encodeURIComponent(p.email)+'">'+esc(p.email)+'</a></p>':'')+(p.phone?'<p>📞 '+esc(p.phone)+'</p>':'');
  const items=listingsResult.data||[];
  body.innerHTML='<div class="public-owner-intro"><div class="renter-profile-avatar">👤</div><h3>'+esc(p.display_name||"FlexiRent owner")+'</h3>'+(p.bio?'<p>'+esc(p.bio)+'</p>':'')+contact+'</div><h3>Published rentals ('+items.length+')</h3>'+(listingsResult.error?'<p>Unable to load owner listings.</p>':items.length?'<div class="public-owner-listings">'+items.map(item=>'<article class="public-owner-card">'+(item.image_url?'<img src="'+esc(item.image_url)+'" alt="" loading="lazy">':'')+'<div><strong>'+esc(item.title)+'</strong><p>'+esc([item.city,item.state].filter(Boolean).join(", "))+'</p><p>$'+Number(item.price_per_day).toFixed(2)+' / day</p><button type="button" class="button button-primary" data-owner-listing="'+esc(item.id)+'">View listing ↗</button></div></article>').join("")+'</div>':'<p>No published listings right now.</p>');
+ return true;
 }
 body.addEventListener("click",async e=>{const btn=e.target.closest("[data-owner-listing]");if(!btn)return;const id=btn.dataset.ownerListing;close();if(window.FlexiRentListing?.open)window.FlexiRentListing.open(id);});
 window.FlexiRentOwnerProfile={open,close};
