@@ -26,13 +26,16 @@ async function refresh(){
  if(id!==listingId)return;
  if(b.error||r.error||a.error||scheduleResult.error){body.textContent=(b.error||r.error||a.error||scheduleResult.error).message;return;}
  const schedule=scheduleResult.data;
+ let published=false;
+ if(ownerMode){const state=await client.from("listings").select("status").eq("id",id).maybeSingle();if(state.error){body.textContent=state.error.message;return;}published=state.data?.status==="published";}
+ if(id!==listingId)return;
  const blocks=b.data||[],requests=r.data||[];
  const dates=[...blocks.map(x=>({id:x.id,start:x.start_date,end:x.end_date,label:"Owner blocked"})),...(a.data||[]).filter(x=>x.reason==="reserved").map(x=>({start:x.start_date,end:x.end_date,label:"Unavailable"}))];
- body.innerHTML='<h3>Unavailable dates</h3>'+(dates.length?'<ul>'+dates.map(x=>'<li>'+esc(x.start)+' to '+esc(x.end)+' ('+esc(x.label)+')'+(ownerMode&&x.id?' <button type="button" data-unblock="'+esc(x.id)+'" aria-label="Unblock '+esc(x.start)+' to '+esc(x.end)+'">Unblock dates</button>':'')+'</li>').join("")+'</ul>':'<p>No dates blocked yet.</p>')+
+ body.innerHTML='<h3>Unavailable dates</h3>'+(dates.length?'<ul>'+dates.map(x=>'<li>'+esc(x.start)+' to '+esc(x.end)+' ('+esc(x.label)+')'+(ownerMode&&!published&&x.id?' <button type="button" data-unblock="'+esc(x.id)+'" aria-label="Unblock '+esc(x.start)+' to '+esc(x.end)+'">Unblock dates</button>':'')+'</li>').join("")+'</ul>':'<p>No dates blocked yet.</p>')+
  (ownerMode?'<form id="pickupHoursForm"><h3>Pickup & return hours</h3><label>Time zone <select name="timezone" required><option value="America/New_York">Eastern</option><option value="America/Chicago">Central</option><option value="America/Denver">Mountain</option><option value="America/Phoenix">Arizona</option><option value="America/Los_Angeles">Pacific</option><option value="America/Anchorage">Alaska</option><option value="Pacific/Honolulu">Hawaii</option></select></label><label>Earliest time <input type="time" name="open" step="1800" required></label><label>Latest time <input type="time" name="close" step="1800" required></label><button type="submit" class="button button-primary">Save hours</button></form>':(!schedule?'<p>Owner has not set pickup hours yet. Booking is temporarily unavailable.</p>':'<p>Pickup and return hours: '+esc(displayTime(schedule.open_time))+' to '+esc(displayTime(schedule.close_time))+' ('+esc(schedule.timezone)+')</p>'))+
- '<form id="bookingForm"><label>Pickup date <input type="date" name="start" required></label>'+(!ownerMode?'<label>Pickup time <select name="pickup" required></select></label>':'')+'<label>Return date <input type="date" name="end" required></label>'+(!ownerMode?'<label>Return time <select name="return" required></select></label>':'')+'<button class="button button-primary" type="submit" '+(!ownerMode&&!schedule?'disabled':'')+'>'+(ownerMode?"Block dates":"Request booking")+'</button></form>'+
+ (ownerMode&&published?'':'<form id="bookingForm"><label>Pickup date <input type="date" name="start" required></label>'+(!ownerMode?'<label>Pickup time <select name="pickup" required></select></label>':'')+'<label>Return date <input type="date" name="end" required></label>'+(!ownerMode?'<label>Return time <select name="return" required></select></label>':'')+'<button class="button button-primary" type="submit" '+(!ownerMode&&!schedule?'disabled':'')+'>'+(ownerMode?"Block dates":"Request booking")+'</button></form>')+
  (ownerMode?'<h3>Booking requests</h3>'+(requests.length?requests.map(x=>'<div class="booking-request"><p>'+esc(x.start_date)+(x.pickup_time?' at '+esc(displayTime(x.pickup_time)):'')+' to '+esc(x.end_date)+(x.return_time?' at '+esc(displayTime(x.return_time)):'')+(x.booking_timezone?' ('+esc(x.booking_timezone)+')':'')+' · '+esc(x.status==="pending"&&new Date(x.expires_at)<=new Date()?"expired":x.status)+'</p>'+(x.status==="pending"&&new Date(x.expires_at)>new Date()?'<button data-respond="'+esc(x.id)+'" data-approve="true">Approve</button> <button data-respond="'+esc(x.id)+'" data-approve="false">Decline</button>':'')+'</div>').join(""):'<p>No requests yet.</p>'):'<p>Owners have 24 hours to approve. Unanswered requests expire automatically.</p>');
- if(ownerMode){
+ if(ownerMode&&!published){
   const hours=body.querySelector("#pickupHoursForm");
   hours.elements.timezone.value=schedule?.timezone||"America/New_York";
   hours.elements.open.value=schedule?.open_time?.slice(0,5)||"08:00";
@@ -43,7 +46,7 @@ async function refresh(){
    message.textContent=result.error?result.error.message:"Pickup hours saved.";
    if(!result.error)await refresh();
   });
- }else if(schedule){
+ }else if(!ownerMode&&schedule){
   const times=[];
   for(let h=0;h<24;h++)for(let m of [0,30]){
    const t=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
@@ -54,6 +57,7 @@ async function refresh(){
   body.querySelector('[name="return"]').innerHTML=options;
  }
  const form=body.querySelector("#bookingForm");
+ if(form){
  if(!ownerMode){
   const unavailable=(a.data||[]).map(x=>({start:x.start_date,end:x.end_date}));
   const today=new Date();today.setHours(0,0,0,0);
@@ -101,6 +105,7 @@ async function refresh(){
  message.textContent=result.error?result.error.message:ownerMode?"Dates blocked.":"Request submitted. Owner has 24 hours to respond.";
  if(!result.error)await refresh();
  });
+ }
  body.querySelectorAll("[data-unblock]").forEach(button=>button.addEventListener("click",async()=>{
  if(!ownerMode||!confirm("Make these dates available again?"))return;
  button.disabled=true;
