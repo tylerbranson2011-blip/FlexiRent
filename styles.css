@@ -253,3 +253,13 @@ body {
 .listing-owner-link{margin:12px 0}
 .listing-owner-link button{background:#4b3494;color:#fff;border-color:#a48be9}
 @media(max-width:480px){.public-owner-card{flex-direction:column}.public-owner-card img{width:100%;height:150px}}
+
+/* Mobile-friendly account settings: scroll the dialog, never the page */
+body.account-settings-open{overflow:hidden!important}
+.account-settings-backdrop:not([hidden]){position:fixed!important;inset:0!important;z-index:10030!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:12px!important;overflow:hidden!important;overscroll-behavior:contain}
+.account-settings-backdrop[hidden]{display:none!important}
+.account-settings-panel{position:relative!important;display:flex!important;flex-direction:column!important;width:min(100%,520px)!important;max-height:calc(100dvh - 24px)!important;min-height:0!important;margin:0 auto!important;overflow-y:auto!important;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:20px!important}
+.account-settings-panel .auth-close{position:sticky!important;top:0!important;align-self:flex-end!important;z-index:5!important;flex-shrink:0!important;background:#39295d!important;border-radius:50%!important}
+.account-settings-panel #settingsForm{padding-bottom:max(20px,env(safe-area-inset-bottom));}
+.account-settings-panel #settingsForm button[type="submit"]{display:block;min-height:48px;width:100%;margin-top:14px;margin-bottom:8px}
+@media(max-width:480px){.account-settings-backdrop:not([hidden]){padding:8px!important}.account-settings-panel{max-height:calc(100dvh - 16px)!important;padding:16px!important}}
