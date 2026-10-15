@@ -47,3 +47,31 @@ body{background:#0a0b0c;color:#f8f7f4}
 .cat-title b{display:grid;place-items:center;flex:none;width:25px;height:25px;background:#ff671c;color:#130a06;border-radius:50%;font-style:normal}
 @media(max-width:900px){.visual-category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.visual-category-card{min-height:165px}}
 @media(max-width:520px){.visual-categories{padding-top:26px;padding-bottom:30px}.visual-category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.visual-category-card{min-height:145px}.visual-category-card:last-child{grid-column:1/-1;min-height:120px}.cat-title{font-size:13px}}
+
+/* Mobile-first refinements: preserve headline and show full equipment rig. */
+@media(max-width:650px){
+ .site-header{display:grid!important;grid-template-columns:minmax(0,1fr) 42px auto auto;align-items:center;gap:7px;padding:9px 12px!important;min-height:65px;height:auto}
+ .site-header .brand{min-width:0;font-size:clamp(16px,4vw,21px);white-space:nowrap}
+ .site-header .brand-mark{width:29px;height:29px;font-size:20px}
+ .site-header .menu-toggle{display:inline-flex!important;grid-column:2;grid-row:1;min-width:40px;min-height:40px;order:initial}
+ .site-header #loginButton,.site-header #signupButton{display:inline-flex!important;grid-row:1;order:initial;flex:none;padding:10px 11px;font-size:11px;white-space:nowrap}
+ .site-header #loginButton{grid-column:3}.site-header #signupButton{grid-column:4}
+ .site-header #listTop,.site-header .desktop-nav{display:none!important}
+ .hero{min-height:0!important;background-image:linear-gradient(180deg,#08090bf5 0%,#08090bc9 27%,#08090b66 49%,#08090be8 100%)!important;background-color:#090a0c!important;background-position:center!important}
+ .hero-copy{padding:27px 0 22px!important;width:100%}
+ .hero h1{font-size:clamp(42px,10vw,61px)!important;line-height:.95}
+ .hero-copy>p{max-width:420px;font-size:13px;line-height:1.55}
+ .hero-actions{gap:12px;flex-wrap:wrap;margin:20px 0 20px}
+ .hero-stats{padding-bottom:8px;flex-wrap:wrap}
+ .hero-bottom-line{gap:8px;justify-content:space-between;padding:12px 0}
+ .hero-bottom-line span{font-size:8px}
+}
+@media(max-width:390px){.site-header{grid-template-columns:minmax(0,1fr) 40px auto auto;gap:4px;padding:8px!important}.site-header .brand{font-size:15px}.site-header .brand-mark{width:26px;height:26px}.site-header #loginButton,.site-header #signupButton{padding:9px 7px;font-size:10px}}
+/* Equipment artwork in its own band below text: no truck cropped behind lettering. */
+@media(max-width:650px){
+ .hero:after{content:"";display:block;order:2;width:100%;height:clamp(165px,48vw,265px);background-image:url("file_0000000001d081f68cdde5f0976fa0e5.png");background-size:contain;background-position:center;background-repeat:no-repeat;filter:drop-shadow(0 15px 18px #000b)}
+ .hero{background-image:linear-gradient(145deg,#101113,#20120d 55%,#090a0c)!important}
+ .hero-bottom-line{order:3}
+ .hero-copy{order:1}
+}
+.visual-category-card:before{filter:saturate(1.08)}
