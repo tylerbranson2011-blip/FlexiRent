@@ -1,14 +1,17 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+const cors = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS"};
+const reply = (data: Record<string,unknown>, status=200) => Response.json(data,{status,headers:cors});
 Deno.serve(async (req) => {
-  if (req.method !== "POST") return Response.json({error:"Method not allowed"},{status:405});
+  if (req.method === "OPTIONS") return new Response(null,{status:204,headers:cors});
+  if (req.method !== "POST") return reply({error:"Method not allowed"},405);
   const token=req.headers.get("Authorization")?.replace(/^Bearer /i,"");
-  if(!token) return Response.json({error:"Sign in required"},{status:401});
+  if(!token) return reply({error:"Sign in required"},401);
   const url=Deno.env.get("SUPABASE_URL"), anon=Deno.env.get("SUPABASE_ANON_KEY"), key=Deno.env.get("STRIPE_SECRET_KEY");
-  if(!url||!anon||!key) return Response.json({error:"Identity verification is not configured yet"},{status:503});
-  if(!key.startsWith("sk_test_")) return Response.json({error:"Only Stripe test mode is enabled"},{status:503});
+  if(!url||!anon||!key) return reply({error:"Identity verification is not configured yet"},503);
+  if(!key.startsWith("sk_test_")) return reply({error:"Only Stripe test mode is enabled"},503);
   const client=createClient(url,anon);
   const {data:{user},error}=await client.auth.getUser(token);
-  if(error||!user||!user.email_confirmed_at)return Response.json({error:"Confirm your email before identity verification"},{status:403});
+  if(error||!user||!user.email_confirmed_at)return reply({error:"Confirm your email before identity verification"},403);
   const params=new URLSearchParams();
   params.set("type","document");
   params.set("options[document][require_matching_selfie]","true");
@@ -17,6 +20,6 @@ Deno.serve(async (req) => {
   params.set("return_url","https://flexirent-afc.pages.dev/");
   const result=await fetch("https://api.stripe.com/v1/identity/verification_sessions",{method:"POST",headers:{"Authorization":"Bearer "+key,"Content-Type":"application/x-www-form-urlencoded"},body:params});
   const data=await result.json();
-  if(!result.ok)return Response.json({error:"Unable to start verification"},{status:502});
-  return Response.json({url:data.url});
+  if(!result.ok)return reply({error:"Unable to start verification"},502);
+  return reply({url:data.url});
 });
