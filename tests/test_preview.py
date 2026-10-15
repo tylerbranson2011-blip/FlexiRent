@@ -28,6 +28,11 @@ class PreviewTests(unittest.TestCase):
         cls.html = (ROOT / "preview/index.html").read_text(encoding="utf-8")
         cls.parser = Parse()
         cls.parser.feed(cls.html)
+    def test_preview_uses_kavoltri_brand_only(self):
+        for page in ("index.html", "legal.html"):
+            html = (ROOT / "preview" / page).read_text(encoding="utf-8")
+            self.assertIn("KAVOLTRI", html)
+            self.assertNotRegex(html, re.compile(r"flexi[\\s-]?rent", re.IGNORECASE))
     def test_demo_is_explicit(self):
         self.assertIn("TEST PREVIEW ONLY", self.html)
         self.assertIn("No data is submitted or saved", self.html)
