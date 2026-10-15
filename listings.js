@@ -59,6 +59,13 @@
         <input id="rentalPrice" type="number"
                min="1" step="0.01" required>
 
+        <label for="rentalHourly">Price per hour ($, optional)</label>
+        <input id="rentalHourly" type="number" min="0.01" step="0.01" placeholder="Leave blank if daily rentals only">
+
+        <label for="rentalOperator">Operator option</label>
+        <select id="rentalOperator" style="width:100%;padding:13px;background:#0d1014;color:white"><option value="without_operator">Without operator</option><option value="operator_available">Operator available upon request</option><option value="operator_required">Operator required / included by owner</option></select>
+        <small>Operator arrangements and charges must be agreed with the owner. Do not assume an operator is included in the listed rate.</small>
+
         <label for="rentalImage">Photo URL (optional)</label>
         <input id="rentalImage" type="url"
                placeholder="https://example.com/photo.jpg">
@@ -167,6 +174,8 @@
         document.getElementById("rentalPrice").value
       ),
       image_url: document.getElementById("rentalImage").value.trim() || null,
+      price_per_hour: document.getElementById("rentalHourly").value ? Number(document.getElementById("rentalHourly").value) : null,
+      operator_option: document.getElementById("rentalOperator").value,
       status: "draft"
     };
 
