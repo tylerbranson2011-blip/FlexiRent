@@ -31,3 +31,4 @@ jobs:
         run: |
           node tests/gallery.test.cjs
           node tests/booking.browser.test.cjs
+          node tests/auth.browser.test.cjs
