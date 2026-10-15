@@ -87,6 +87,7 @@ async function openDetails(id){
   window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image,photos:error?[]:photos||[],unavailable:Boolean(error)});
  }catch{if(request===detailRequest)window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image,unavailable:true});}
 }
+window.FlexiRentListing={open:openDetails};
 function closeDetails(){++detailRequest;modal.classList.add("hidden");document.body.style.overflow="";}
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();selectedCategory="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p.dataset.category==="all"));render();});
 document.getElementById("categoryPills").addEventListener("click",e=>{const pill=e.target.closest("[data-category]");if(!pill)return;selectedCategory=pill.dataset.category;categorySelect.value="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p===pill));render();});
