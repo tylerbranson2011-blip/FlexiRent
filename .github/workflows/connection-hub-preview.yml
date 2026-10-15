@@ -1,0 +1,19 @@
+name: Connection Hub Preview Checks
+on:
+  push:
+    branches: [feature/connection-hub-legal-2026-10-15]
+  pull_request:
+    paths:
+      - 'preview/**'
+      - 'legal.html'
+      - 'tests/**'
+      - '.github/workflows/connection-hub-preview.yml'
+permissions:
+  contents: read
+jobs:
+  preview-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check isolated preview
+        run: python3 -m unittest discover -s tests -p 'test_preview.py' -v
