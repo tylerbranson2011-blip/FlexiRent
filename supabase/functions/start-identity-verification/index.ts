@@ -1,0 +1,22 @@
+import { createClient } from "npm:@supabase/supabase-js@2";
+Deno.serve(async (req) => {
+  if (req.method !== "POST") return Response.json({error:"Method not allowed"},{status:405});
+  const token=req.headers.get("Authorization")?.replace(/^Bearer /i,"");
+  if(!token) return Response.json({error:"Sign in required"},{status:401});
+  const url=Deno.env.get("SUPABASE_URL"), anon=Deno.env.get("SUPABASE_ANON_KEY"), key=Deno.env.get("STRIPE_SECRET_KEY");
+  if(!url||!anon||!key) return Response.json({error:"Identity verification is not configured yet"},{status:503});
+  if(!key.startsWith("sk_test_")) return Response.json({error:"Only Stripe test mode is enabled"},{status:503});
+  const client=createClient(url,anon);
+  const {data:{user},error}=await client.auth.getUser(token);
+  if(error||!user||!user.email_confirmed_at)return Response.json({error:"Confirm your email before identity verification"},{status:403});
+  const params=new URLSearchParams();
+  params.set("type","document");
+  params.set("options[document][require_matching_selfie]","true");
+  params.set("client_reference_id",user.id);
+  params.set("metadata[user_id]",user.id);
+  params.set("return_url","https://flexirent-afc.pages.dev/");
+  const result=await fetch("https://api.stripe.com/v1/identity/verification_sessions",{method:"POST",headers:{"Authorization":"Bearer "+key,"Content-Type":"application/x-www-form-urlencoded"},body:params});
+  const data=await result.json();
+  if(!result.ok)return Response.json({error:"Unable to start verification"},{status:502});
+  return Response.json({url:data.url});
+});
