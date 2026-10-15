@@ -15,6 +15,7 @@
     ["equipment", "Heavy Equipment"],
     ["light_equipment", "Light Equipment"],
     ["boat", "Boats"],
+    ["atv_utv", "ATVs / UTVs"],
     ["jetski", "Jet Skis / Personal Watercraft"],
     ["paddlecraft", "Kayaks, Canoes & Paddleboards"]
   ];
