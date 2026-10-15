@@ -31,7 +31,7 @@
       <h2 id="authTitle">Welcome to Flexi Rent</h2>
       <p id="authSubtitle">Sign in to your account.</p>
 
-      <form id="authForm">
+      <div id="accountOverview" hidden>\n        <p id="accountVerification"></p>\n        <button id="becomeOwner" type="button" hidden>Become an Owner</button>\n      </div>\n      <form id="authForm">
         <label for="authEmail">Email address</label>
         <input id="authEmail" type="email"
                autocomplete="email" required>
@@ -106,7 +106,7 @@
       border-radius: 9px;
       font-size: 16px;
     }
-    .auth-panel .account-type-note {font-size:12px;margin:8px 0 0;}\n    #authSubmit {
+    .auth-panel .account-type-note {font-size:12px;margin:8px 0 0;}\n    #becomeOwner {background:#ff633f;color:#111;border:0;border-radius:9px;padding:12px;font-weight:800;cursor:pointer;}\n    #authSubmit {
       width: 100%;
       margin-top: 18px;
       padding: 14px;
@@ -150,14 +150,20 @@
   const message = document.getElementById("authMessage");
   const submit = document.getElementById("authSubmit");
   const switchButton = document.getElementById("authSwitch");
-  const password = document.getElementById("authPassword");\n  const accountTypeGroup = document.getElementById("accountTypeGroup");\n  const accountType = document.getElementById("accountType");
+  const password = document.getElementById("authPassword");
+  const accountTypeGroup = document.getElementById("accountTypeGroup");
+  const accountType = document.getElementById("accountType");
+  const overview = document.getElementById("accountOverview");
+  const verification = document.getElementById("accountVerification");
+  const becomeOwner = document.getElementById("becomeOwner");
 
   let mode = "login";
+  function showOverview() {\n    if (!currentUser) return;\n    const emailVerified = Boolean(currentUser.email_confirmed_at || currentUser.confirmed_at);\n    form.hidden = true;\n    switchButton.hidden = true;\n    overview.hidden = false;\n    title.textContent = "My Flexi Rent Account";\n    subtitle.textContent = currentUser.email || "Account";\n    verification.textContent = emailVerified ? "Email verified. Identity verification is not yet available. It will be required before rentals or listings can be activated." : "Email not verified. Confirm your email first. Identity verification is also required before rentals or listings can be activated.";\n    becomeOwner.hidden = currentUser.user_metadata?.account_type === "owner";\n    message.textContent = "";\n  }\n  becomeOwner.addEventListener("click", async () => {\n    becomeOwner.disabled = true;\n    message.textContent = "Updating account...";\n    try {\n      const {data,error} = await client.auth.updateUser({data:{account_type:"owner"}});\n      if (error) throw error;\n      currentUser = data.user;\n      updateHeader();\n      showOverview();\n      message.textContent = "Owner option enabled. Identity verification is still required before listing rentals.";\n    } catch (error) {message.textContent = error.message || "Unable to update account.";}\n    finally {becomeOwner.disabled = false;}\n  });
   let currentUser = null;
 
   function setMode(nextMode) {
     mode = nextMode;
-    form.reset();\n    accountTypeGroup.hidden = mode !== "signup";\n    accountType.disabled = mode !== "signup";
+    form.hidden = false;\n    overview.hidden = true;\n    switchButton.hidden = false;\n    form.reset();\n    accountTypeGroup.hidden = mode !== "signup";\n    accountType.disabled = mode !== "signup";
     message.textContent = "";
     title.textContent =
       mode === "signup" ? "Create your account" : "Welcome back";
@@ -211,7 +217,7 @@
 
   signupButton.addEventListener("click", () => {
     if (currentUser) {
-      alert("Signed in as " + currentUser.email + "\\nAccount type: " + (currentUser.user_metadata?.account_type === "owner" ? "Owner" : currentUser.user_metadata?.account_type === "renter" ? "Renter" : "Not selected") + "\\nBoth renting and listing are available to every account.");
+      modal.hidden = false;\n      showOverview();
     } else {
       openModal("signup");
     }
