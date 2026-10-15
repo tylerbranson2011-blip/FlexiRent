@@ -1,0 +1,26 @@
+/* Kavoltri concept 4: Bold & Rugged. Presentation-only override. */
+:root{--bg:#0a0b0c;--panel:#17191c;--panel2:#242629;--line:#37393d;--text:#f8f7f4;--muted:#b0aaa3;--orange:#ff671c;--orange2:#ff8a3d;--green:#ffb268}
+body{background:#0a0b0c;color:#f8f7f4}
+.announcement{background:#ff671c;color:#17110e;letter-spacing:.18em}
+.site-header{background:rgba(10,11,12,.97);border-bottom:1px solid #33302d}
+.brand{font-size:clamp(20px,2.3vw,29px);font-style:italic;letter-spacing:-.07em;text-transform:uppercase}
+.brand-mark{background:#ff671c;color:#15100d;clip-path:polygon(0 0,100% 0,100% 70%,72% 100%,0 100%)}
+.desktop-nav{color:#e4ded7}.button-primary,.details-button{background:linear-gradient(120deg,#ff5417,#ff8b24);color:#190e09;box-shadow:0 5px 24px #ff671c22}
+.button-primary:hover,.details-button:hover{background:#ff9b42}
+.hero{isolation:isolate;min-height:590px;padding-top:90px;background:linear-gradient(90deg,rgba(5,7,9,.97) 0%,rgba(5,7,9,.91) 38%,rgba(5,7,9,.54) 100%),radial-gradient(circle at 78% 30%,#914321 0%,transparent 45%),linear-gradient(145deg,#121416,#090a0c)}
+.hero:before{content:"";position:absolute;inset:0;z-index:-1;opacity:.26;background:repeating-linear-gradient(118deg,transparent 0 86px,#ff741008 87px 88px),linear-gradient(0deg,#070707,transparent 50%)}
+.hero-copy{padding-top:28px}.hero h1{font-style:italic;font-weight:1000;font-stretch:condensed;font-size:clamp(54px,7vw,108px);line-height:.88;letter-spacing:-.07em;text-shadow:0 5px 24px #000b}
+.hero h1 span{color:#ff6a1e}.hero-copy>p{color:#ded8d0;font-size:clamp(15px,1.4vw,18px);max-width:530px;line-height:1.65}
+.hero-art{min-height:380px}.art-glow{background:#ff661c;opacity:.24}.truck-art{filter:drop-shadow(0 26px 24px #000c) saturate(.55) contrast(1.12)}
+.art-tag{background:#111214ee;border-color:#6a4938}.tag-icon{background:#ff671c}.hero-bottom-line{color:#c2afa0;border-color:#6b4a35}
+.eyebrow{color:#ff7b34}.eyebrow-line{background:#ff7b34}
+.search-section{background:#101113}.search-panel{background:#1c1d20;border:1px solid #544239;box-shadow:0 18px 48px #0005}
+.category-pill{background:#1a1b1d;border-color:#39312c;color:#e3ded9}.category-pill.active,.category-pill:hover{background:#ff671c22;border-color:#ff671c;color:#ff9c60}
+.listing-card,.steps-grid article{background:#1a1b1d;border-color:#343130}.listing-card:hover{border-color:#ff671c}
+.listing-category,.accent{color:#ff7c34}.image-badge{border-color:#8a5a37}.favorite.saved{color:#ff671c}
+.how-section{background:#0b0c0e}.step-icon{background:#ff671c1f;border-color:#ff671c55;color:#ff7c34}
+.owner-cta{background:linear-gradient(120deg,#c34a16,#ff7024);color:#150d09}
+.owner-cta .eyebrow{color:#21100b}.site-footer{background:#0a0b0c}
+#verifyIdentity:not(.is-verified){background:linear-gradient(135deg,#dd4a17,#ff8a24)!important;border-color:#ff9b5d!important;box-shadow:0 5px 20px #ff671c30!important}
+@media(max-width:850px){.hero{padding-top:46px;min-height:0}.hero h1{font-size:clamp(48px,10vw,78px)}.hero-art{min-height:250px}.hero-copy{padding-top:10px}}
+@media(max-width:520px){.brand{font-size:21px}.hero{padding-top:34px}.hero h1{font-size:clamp(46px,12vw,64px)}.hero-copy>p{font-size:14px}.hero-art{min-height:190px}.hero-bottom-line{flex-wrap:wrap;gap:12px}.hero-bottom-line span{font-size:9px}}
