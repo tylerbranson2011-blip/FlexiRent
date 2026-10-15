@@ -174,3 +174,23 @@ body {
 .account-menu button:hover,.account-menu button:focus-visible{background:#342b50}
 #settingsForm textarea{display:block;width:100%;padding:13px;background:#0d1014;color:white;border:1px solid #444b55;border-radius:9px;font:inherit}
 #settingsForm .button{margin-top:12px}
+
+/* Owner dashboard action palette: clear, colorful, touch-friendly. */
+.owner-listing{box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.owner-listing button,.owner-rate-renter{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:43px;margin:5px 5px 5px 0;padding:10px 14px;border:1px solid transparent;border-radius:10px;font-weight:750;font-size:13px;line-height:1.25;transition:filter .15s,transform .15s,box-shadow .15s}
+.owner-listing button:hover,.owner-rate-renter:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.owner-listing button:focus-visible,.owner-rate-renter:focus-visible{outline:3px solid #e9d5ff;outline-offset:3px}
+.owner-listing button:disabled,.owner-rate-renter:disabled{opacity:.55;cursor:not-allowed}
+.owner-listing .edit-listing{background:#5034a6;color:#fff;border-color:#9c83ef}
+.owner-listing .manage-booking-dates{background:#155e75;color:#ecfeff;border-color:#22b8d6}
+.owner-listing .edit-listing-photos{background:#854d0e;color:#fff7db;border-color:#f6b74c}
+.owner-listing .publish-listing{background:#166534;color:#effff2;border-color:#4ade80}
+.owner-listing .unpublish-listing{background:#8c3146;color:#fff1f2;border-color:#fb7185}
+.owner-rate-renter{background:#6d4b13;color:#fff7df;border-color:#eab308}
+.owner-request-actions .owner-respond[data-approve="true"]{background:#166534;color:#f0fff4;border:1px solid #4ade80}
+.owner-request-actions .owner-respond[data-approve="false"]{background:#8c3146;color:#fff1f2;border:1px solid #fb7185}
+.owner-request-actions .manage-booking-dates{background:#155e75;color:#ecfeff;border:1px solid #22b8d6}
+.owner-request-actions button{border-radius:9px;font-weight:750}
+.owner-filters button{min-height:39px}
+.owner-filters button[aria-pressed="true"]{background:#5136a1;color:white;border-color:#b79aff}
+@media(max-width:480px){.owner-listing button{width:100%;margin:5px 0}.owner-request-actions{width:100%}.owner-request-actions button{flex:1 1 auto}}
