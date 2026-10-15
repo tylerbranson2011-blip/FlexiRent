@@ -210,6 +210,7 @@
       currentUser = data.user;
       updateHeader();
       showOverview();
+      window.dispatchEvent(new Event("flexirent:account-role-changed"));
       message.textContent = "Owner option enabled. Identity verification is still required before listing rentals.";
     } catch (error) {message.textContent = error.message || "Unable to update account.";}
     finally {becomeOwner.disabled = false;}
