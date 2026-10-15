@@ -185,68 +185,99 @@ ${item.status === "published" ? `
     try{const {data:photos,error:photoError}=await client.from("listing_photos").select("listing_id,image_url,position").in("listing_id",listings.map(item=>item.id)).order("position",{ascending:true});if(request!==dashboardRequest||modal.hidden)return;mountGalleries(photoError?[]:photos||[],Boolean(photoError))}catch{if(request===dashboardRequest&&!modal.hidden)mountGalleries([],true)}
   }
 
-  async function editListing(id) {
-    const { data: authData, error: authError } =
-      await client.auth.getUser();
-
-    if (authError || !authData.user) {
-      alert("Please log in again.");
-      return;
-    }
-
-    const { data: listing, error } = await client
-      .from("listings")
-      .select("id,title,description,price_per_day")
-      .eq("id", id)
-      .eq("owner_id", authData.user.id)
-      .single();
-
-    if (error || !listing) {
-      alert("Could not load this listing.");
-      return;
-    }
-
-    const title = prompt("Listing title:", listing.title);
-    if (title === null) return;
-
-    const price = prompt(
-      "Daily rental price ($):",
-      listing.price_per_day
-    );
-    if (price === null) return;
-
-    const description = prompt(
-      "Description:",
-      listing.description || ""
-    );
-    if (description === null) return;
-
-    const amount = Number(price);
-
-    if (!title.trim() || !price.trim() ||
-        !Number.isFinite(amount) || amount <= 0) {
-      alert("Enter a title and a valid price above $0.");
-      return;
-    }
-
-    const { error: saveError } = await client
-      .from("listings")
-      .update({
-        title: title.trim(),
-        price_per_day: amount,
-        description: description.trim()
-      })
-      .eq("id", id)
-      .eq("owner_id", authData.user.id);
-
-    if (saveError) {
-      alert("Save failed: " + saveError.message);
-      return;
-    }
-
-    window.FlexiRentNotice?.show("Listing changes saved!");
-    openDashboard();
+  // Dedicated editor replaces native browser prompts.
+  const editor = document.createElement("div");
+  editor.className = "auth-backdrop listing-editor-backdrop";
+  editor.hidden = true;
+  editor.innerHTML = `
+    <div class="auth-panel listing-editor-panel" role="dialog" aria-modal="true" aria-labelledby="editListingTitle">
+      <button class="auth-close" type="button" aria-label="Close editor">×</button>
+      <h2 id="editListingTitle">✏️ Edit Listing</h2>
+      <p>Update your rental details. Changes save to your listing.</p>
+      <form id="editListingForm">
+        <label for="editListingName">Listing title</label>
+        <input id="editListingName" name="title" maxlength="120" required>
+        <div class="listing-editor-prices">
+          <div><label for="editListingDaily">Daily price ($)</label><input id="editListingDaily" name="daily" type="number" min="0.01" step="0.01" required></div>
+          <div><label for="editListingHourly">Hourly price ($), optional</label><input id="editListingHourly" name="hourly" type="number" min="0.01" step="0.01" placeholder="Not offered"></div>
+        </div>
+        <label for="editListingOperator">Operator availability</label>
+        <select id="editListingOperator" name="operator">
+          <option value="without_operator">Without operator</option>
+          <option value="operator_available">Operator available</option>
+          <option value="operator_required">Operator required</option>
+        </select>
+        <label for="editListingDescription">Description</label>
+        <textarea id="editListingDescription" name="description" rows="5" maxlength="5000"></textarea>
+        <p class="listing-editor-hint">To change available dates or pickup times, unpublish the listing first and use Availability & Requests.</p>
+        <p id="editListingMessage" role="status" aria-live="polite"></p>
+        <div class="listing-editor-actions">
+          <button type="button" class="button button-ghost listing-editor-cancel">Cancel</button>
+          <button type="submit" class="button button-primary listing-editor-save">Save Changes</button>
+        </div>
+      </form>
+    </div>`;
+  document.body.appendChild(editor);
+  const editForm=editor.querySelector("#editListingForm");
+  const editMessage=editor.querySelector("#editListingMessage");
+  let editingId=null;
+  function closeEditor(){
+    editor.hidden=true;
+    editingId=null;
+    modal.hidden=false;
   }
+  editor.querySelector(".auth-close").addEventListener("click",closeEditor);
+  editor.querySelector(".listing-editor-cancel").addEventListener("click",closeEditor);
+  editor.addEventListener("click",event=>{if(event.target===editor)closeEditor();});
+  editor.addEventListener("keydown",event=>{if(event.key==="Escape")closeEditor();});
+  async function editListing(id) {
+    const {data:{user},error:authError}=await client.auth.getUser();
+    if(authError||!user){window.FlexiRentNotice?.show("Please log in again.","error");return;}
+    const {data:listing,error}=await client.from("listings")
+      .select("id,title,description,price_per_day,price_per_hour,operator_option")
+      .eq("id",id).eq("owner_id",user.id).single();
+    if(error||!listing){window.FlexiRentNotice?.show("Could not load this listing.","error");return;}
+    editingId=id;
+    editForm.elements.title.value=listing.title||"";
+    editForm.elements.daily.value=listing.price_per_day??"";
+    editForm.elements.hourly.value=listing.price_per_hour??"";
+    editForm.elements.operator.value=listing.operator_option||"without_operator";
+    editForm.elements.description.value=listing.description||"";
+    editMessage.textContent="";
+    modal.hidden=true;
+    editor.hidden=false;
+    editForm.elements.title.focus();
+  }
+  editForm.addEventListener("submit",async event=>{
+    event.preventDefault();
+    if(!editingId)return;
+    const title=editForm.elements.title.value.trim();
+    const daily=Number(editForm.elements.daily.value);
+    const hourlyRaw=editForm.elements.hourly.value.trim();
+    const hourly=hourlyRaw===""?null:Number(hourlyRaw);
+    const operator=editForm.elements.operator.value;
+    if(!title||!Number.isFinite(daily)||daily<=0||(hourly!==null&&(!Number.isFinite(hourly)||hourly<=0))){
+      editMessage.textContent="Enter a title and valid prices above $0.";
+      return;
+    }
+    const save=editor.querySelector(".listing-editor-save");
+    save.disabled=true;editMessage.textContent="Saving changes...";
+    try{
+      const {data:{user},error:authError}=await client.auth.getUser();
+      if(authError||!user)throw Error("Please log in again.");
+      const {data,error}=await client.from("listings").update({
+        title,price_per_day:daily,price_per_hour:hourly,
+        operator_option:operator,description:editForm.elements.description.value.trim()
+      }).eq("id",editingId).eq("owner_id",user.id).select("id");
+      if(error)throw error;
+      if(!data?.length)throw Error("Listing not found or permission denied.");
+      window.FlexiRentNotice?.show("Listing changes saved!");
+      editor.hidden=true;editingId=null;
+      modal.hidden=false;
+      await openDashboard();
+    }catch(error){editMessage.textContent=error.message||"Could not save listing.";}
+    finally{save.disabled=false;}
+  });
 
   async function publishListing(id) {
     const { data: authData, error: authError } =
