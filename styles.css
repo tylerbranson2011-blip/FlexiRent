@@ -160,5 +160,4 @@ body {
 .action-notice-text{flex:1;min-width:0;overflow-wrap:anywhere}
 .action-notice button{background:transparent;border:0;color:inherit;font-size:23px;cursor:pointer;padding:0 2px}
 
-/* Face the pickup forward so its trailer follows behind it. */
-.hero-art .truck-art{transform:scaleX(-1)}
+
