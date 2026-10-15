@@ -7,6 +7,7 @@ on:
       - 'preview/**'
       - 'legal.html'
       - 'tests/**'
+      - 'proposals/**'
       - '.github/workflows/connection-hub-preview.yml'
 permissions:
   contents: read
@@ -15,5 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check isolated preview
-        run: python3 -m unittest discover -s tests -p 'test_preview.py' -v
+      - name: Check isolated preview and staged SQL safety
+        run: |
+          python3 -m unittest discover -s tests -p 'test_preview.py' -v
+          python3 -m unittest discover -s tests -p 'test_connection_proposals.py' -v
