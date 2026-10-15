@@ -168,8 +168,8 @@ async function loadRealListings() {
     return;
   }
 
-  const supportedCategories=new Set(["trailer","rv","equipment","light_equipment"]);
-  const categoryNames={trailer:"Trailers",rv:"Campers",equipment:"Heavy Equipment",light_equipment:"Light Equipment"};
+  const supportedCategories=new Set(["trailer","rv","equipment","light_equipment","boat","jetski","paddlecraft"]);
+  const categoryNames={trailer:"Trailers",rv:"Campers",equipment:"Heavy Equipment",light_equipment:"Light Equipment",boat:"Boats",jetski:"Jet Skis / PWCs",paddlecraft:"Kayaks, Canoes & Paddleboards"};
   listings = (data || []).filter(item=>supportedCategories.has(item.category)).map(item => ({
     id: item.id,
     title: item.title || "Untitled rental",
