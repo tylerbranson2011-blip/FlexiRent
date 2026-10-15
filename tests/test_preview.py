@@ -36,10 +36,14 @@ class PreviewTests(unittest.TestCase):
             self.assertNotIn(forbidden, self.html)
         self.assertEqual(self.parser.scripts, [None])
     def test_accessible_forms(self):
-        for required in ["inquiryDemo", "demoSubject", "demoMessage", "demoAcknowledged", "inquiryResult", "checkDialog", "dialogTitle", "checkForm", "checks", "result", "ownerButton", "closeDialog"]:
+        for required in ["reportDemo", "reportReason", "reportDetails", "reportAcknowledged", "reportResult", "inquiryDemo", "demoSubject", "demoMessage", "demoAcknowledged", "inquiryResult", "checkDialog", "dialogTitle", "checkForm", "checks", "result", "ownerButton", "closeDialog"]:
             self.assertIn(required, self.parser.ids)
         self.assertIn('input.required=true', self.html)
         self.assertIn('textContent=statement', self.html)
+    def test_demo_report_is_not_transmitted(self):
+        self.assertIn("Sample report validated locally. No report was filed or saved.", self.html)
+        for reason in ("fraud", "unsafe", "harassment", "misleading", "other"):
+            self.assertIn(f'value="{reason}"', self.html)
     def test_demo_inquiry_is_not_transmitted(self):
         self.assertIn("Sample inquiry validated locally. No message was sent or stored.", self.html)
         self.assertIn('minlength="10" maxlength="2000"', self.html)
