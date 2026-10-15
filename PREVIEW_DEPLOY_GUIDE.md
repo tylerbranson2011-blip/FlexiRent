@@ -15,9 +15,6 @@ This branch contains `preview/index.html`, a standalone demo that has **no Supab
 - Demo banner visible on desktop and mobile.
 - Trailer, towable camper and equipment buttons open a checklist.
 - Each checkbox is individually required and the confirmation says **demo only**.
-- Links to `../legal.html` will **not work** when only `preview` is deployed. Legal copy must be copied into the preview output or links updated before public sharing.
-- No network calls to Supabase, no checkout, no messages, no uploads.
-
-**Known blocker:** `../legal.html` links from the standalone preview are not deployed when the build output is `preview`. Resolve before sharing the test URL externally.
+- Draft legal page is bundled as `preview/legal.html`; verify the links open correctly.
 
 This is a static UI demonstration, not a production launch.
