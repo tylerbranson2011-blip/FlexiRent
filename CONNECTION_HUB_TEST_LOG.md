@@ -15,3 +15,9 @@ Date: 2026-10-15. Target: current Supabase project, **transaction rollback only*
 - Complete backup, legal review, subscription disclosures and owner contact flow before launch.
 
 Status: preliminary test passed for simplified constraint logic; full security enforcement **not yet validated or deployed**.
+
+## Follow-up actual trigger checks
+- Executed proposed SQL in an explicit transaction, ran updates against the existing published car and published equipment rows, and captured PASS/FAIL into a temporary results table.
+- Result: **PASS: rejected** for both car and equipment without owner consent.
+- Issued ROLLBACK; no permanent database changes from this test.
+- These tests use SQL administrative context and do not replace authenticated-user REST/RLS tests.
