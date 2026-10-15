@@ -106,7 +106,7 @@
     }
 
     const {data:requests,error:requestsError}=await client.from("booking_requests")
-      .select("id,listing_id,status,expires_at,created_at,start_date,end_date")
+      .select("id,listing_id,renter_id,status,expires_at,created_at,start_date,end_date,pickup_time,return_time,booking_timezone,agreed_price_per_day,agreed_price_per_hour,agreed_operator_option")
       .in("listing_id",listings.map(item=>item.id))
       .order("created_at",{ascending:false});
     if(request!==dashboardRequest||modal.hidden)return;
@@ -120,6 +120,12 @@
     const summary='<div class="owner-summary">'+[
       ["Total listings",listings.length],["Published",published.length],["Pending requests",requestsError?"—":pending.length],["Approved bookings",requestsError?"—":approved.length]
     ].map(([label,value])=>'<div class="owner-stat"><strong>'+value+'</strong><span>'+label+'</span></div>').join("")+'</div>';
+    const approvedList=requestsError?'':('<section class="approved-bookings-section"><button type="button" class="approved-bookings-toggle" aria-expanded="false" aria-controls="approvedBookingsList"><span>✅ Approved bookings ('+approved.length+')</span><span class="approved-chevron" aria-hidden="true">▾</span></button><div id="approvedBookingsList" hidden>'+ (approved.length?approved.map(r=>{
+      const listing=listings.find(l=>l.id===r.listing_id);
+      const date=s=>/^\\d{4}-\\d{2}-\\d{2}$/.test(s||"")?s.slice(5,7)+"/"+s.slice(8,10)+"/"+s.slice(0,4):s||"Not set";
+      const time=s=>{const m=/^(\\d{2}):(\\d{2})/.exec(s||"");if(!m)return "Not set";const h=Number(m[1]);return (h%12||12)+":"+m[2]+" "+(h<12?"AM":"PM");};
+      return '<article class="approved-booking-card"><strong>'+escapeHTML(listing?.title||"Rental")+'</strong><p>Pickup: '+escapeHTML(date(r.start_date))+' at '+escapeHTML(time(r.pickup_time))+'</p><p>Return: '+escapeHTML(date(r.end_date))+' at '+escapeHTML(time(r.return_time))+'</p>'+(r.booking_timezone?'<p>Time zone: '+escapeHTML(r.booking_timezone)+'</p>':'')+'<button type="button" class="approved-renter-profile button button-ghost" data-booking="'+escapeHTML(r.id)+'">👤 View renter profile</button></article>';
+    }).join(""):'<p>No approved rentals yet.</p>')+'</div></section>');
     const reviewsQueue=allRequests.filter(r=>reviewEligible.has(r.id));
     const reviewActions=reviewsQueue.length?'<h3>Rate completed renters</h3>'+reviewsQueue.map(r=>'<button type="button" class="button button-ghost owner-rate-renter" data-booking="'+escapeHTML(r.id)+'">⭐ Rate renter for '+escapeHTML(listings.find(l=>l.id===r.listing_id)?.title||'rental')+'</button>').join(''):'';
     const queue=requestsError?'<p role="status">Booking summary unavailable: '+escapeHTML(requestsError.message)+'</p>':
@@ -128,7 +134,7 @@
         const listing=listings.find(l=>l.id===r.listing_id);
         return '<div class="owner-request"><div><strong>'+escapeHTML(listing?.title||"Rental")+'</strong><small>'+escapeHTML(r.start_date)+' to '+escapeHTML(r.end_date)+' · '+escapeHTML(effectiveStatus(r))+'</small></div><div class="owner-request-actions"><button type="button" class="owner-respond button button-primary" data-request="'+escapeHTML(r.id)+'" data-approve="true">Approve</button><button type="button" class="owner-respond button button-ghost" data-request="'+escapeHTML(r.id)+'" data-approve="false">Decline</button><button type="button" class="manage-booking-dates button button-ghost" data-id="'+escapeHTML(r.listing_id)+'">Details</button></div></div>';
       }).join("")+'</div>':'<p>No pending booking requests.</p>');
-    content.innerHTML='<button type="button" class="button button-primary new-owner-listing">＋ New Listing</button>'+summary+queue+reviewActions+'<h3>Your listings</h3><div class="owner-filters"><button type="button" class="button button-ghost" data-owner-filter="all" aria-pressed="true">All</button><button type="button" class="button button-ghost" data-owner-filter="published" aria-pressed="false">Published</button><button type="button" class="button button-ghost" data-owner-filter="draft" aria-pressed="false">Drafts</button></div>'+listings.map(item => `
+    content.innerHTML='<button type="button" class="button button-primary new-owner-listing">＋ New Listing</button>'+summary+approvedList+queue+reviewActions+'<h3>Your listings</h3><div class="owner-filters"><button type="button" class="button button-ghost" data-owner-filter="all" aria-pressed="true">All</button><button type="button" class="button button-ghost" data-owner-filter="published" aria-pressed="false">Published</button><button type="button" class="button button-ghost" data-owner-filter="draft" aria-pressed="false">Drafts</button></div>'+listings.map(item => `
       <div class="owner-listing" data-listing-status="${escapeHTML(item.status)}" style="
         padding:15px;
         margin:12px 0;
@@ -368,7 +374,30 @@ ${item.status === "published" ? `
     openDashboard();
   }
 
+  const renterProfile=document.createElement("div");
+  renterProfile.className="auth-backdrop approved-renter-backdrop";
+  renterProfile.hidden=true;
+  renterProfile.innerHTML='<div class="auth-panel approved-renter-panel" role="dialog" aria-modal="true" aria-labelledby="renterProfileTitle"><button type="button" class="auth-close" aria-label="Close renter profile">×</button><h2 id="renterProfileTitle">Renter Profile</h2><div id="renterProfileContent" role="status">Loading...</div><button type="button" class="button button-ghost approved-profile-back">← Back to approved bookings</button></div>';
+  document.body.appendChild(renterProfile);
+  const closeRenterProfile=()=>{renterProfile.hidden=true;modal.hidden=false;};
+  renterProfile.querySelector(".auth-close").addEventListener("click",closeRenterProfile);
+  renterProfile.querySelector(".approved-profile-back").addEventListener("click",closeRenterProfile);
+  renterProfile.addEventListener("click",e=>{if(e.target===renterProfile)closeRenterProfile();});
+  async function openRenterProfile(bookingId){
+    const details=renterProfile.querySelector("#renterProfileContent");
+    modal.hidden=true;renterProfile.hidden=false;details.textContent="Loading renter profile...";
+    const {data,error}=await client.rpc("owner_approved_renter_profile",{p_booking:bookingId});
+    if(renterProfile.hidden)return;
+    if(error){details.textContent="Unable to open profile: "+error.message;return;}
+    const stars=data.average_rating==null?"No ratings yet":Number(data.average_rating).toFixed(1)+" / 5 stars";
+    details.innerHTML='<div class="renter-profile-avatar">👤</div><h3>'+escapeHTML(data.display_name||"FlexiRent renter")+'</h3><p class="renter-profile-rating">⭐ '+escapeHTML(stars)+' ('+Number(data.review_count||0)+' reviews)</p><h4>About renter</h4><p>'+escapeHTML(data.bio||"This renter has not added a bio yet.")+'</p><p class="renter-profile-privacy">Email and phone are kept private.</p>';
+  }
   content.addEventListener("click", async event => {
+    const toggleApproved=event.target.closest(".approved-bookings-toggle");
+    if(toggleApproved){const list=content.querySelector("#approvedBookingsList");if(list){list.hidden=!list.hidden;toggleApproved.setAttribute("aria-expanded",String(!list.hidden));}return;}
+    const renterButton=event.target.closest(".approved-renter-profile");
+    if(renterButton){await openRenterProfile(renterButton.dataset.booking);return;}
+
     const reviewButton=event.target.closest(".owner-rate-renter");
     if(reviewButton){window.FlexiRentReviews?.open(reviewButton.dataset.booking,openDashboard);return;}
 
