@@ -110,6 +110,7 @@
       .in("listing_id",listings.map(item=>item.id))
       .order("created_at",{ascending:false});
     if(request!==dashboardRequest||modal.hidden)return;
+    const reviewEligible=await window.FlexiRentReviews?.eligibility(requests||[],"owner",data.user.id)||new Set();
     const now=Date.now();
     const effectiveStatus=r=>r.status==="pending"&&r.expires_at&&new Date(r.expires_at).getTime()<=now?"expired":r.status;
     const allRequests=requests||[];
@@ -119,13 +120,15 @@
     const summary='<div class="owner-summary">'+[
       ["Total listings",listings.length],["Published",published.length],["Pending requests",requestsError?"—":pending.length],["Approved bookings",requestsError?"—":approved.length]
     ].map(([label,value])=>'<div class="owner-stat"><strong>'+value+'</strong><span>'+label+'</span></div>').join("")+'</div>';
+    const reviewsQueue=allRequests.filter(r=>reviewEligible.has(r.id));
+    const reviewActions=reviewsQueue.length?'<h3>Rate completed renters</h3>'+reviewsQueue.map(r=>'<button type="button" class="button button-ghost owner-rate-renter" data-booking="'+escapeHTML(r.id)+'">⭐ Rate renter for '+escapeHTML(listings.find(l=>l.id===r.listing_id)?.title||'rental')+'</button>').join(''):'';
     const queue=requestsError?'<p role="status">Booking summary unavailable: '+escapeHTML(requestsError.message)+'</p>':
       '<h3>Pending booking requests</h3>'+(pending.length?
       '<div class="owner-requests">'+pending.map(r=>{
         const listing=listings.find(l=>l.id===r.listing_id);
         return '<div class="owner-request"><div><strong>'+escapeHTML(listing?.title||"Rental")+'</strong><small>'+escapeHTML(r.start_date)+' to '+escapeHTML(r.end_date)+' · '+escapeHTML(effectiveStatus(r))+'</small></div><div class="owner-request-actions"><button type="button" class="owner-respond button button-primary" data-request="'+escapeHTML(r.id)+'" data-approve="true">Approve</button><button type="button" class="owner-respond button button-ghost" data-request="'+escapeHTML(r.id)+'" data-approve="false">Decline</button><button type="button" class="manage-booking-dates button button-ghost" data-id="'+escapeHTML(r.listing_id)+'">Details</button></div></div>';
       }).join("")+'</div>':'<p>No pending booking requests.</p>');
-    content.innerHTML='<button type="button" class="button button-primary new-owner-listing">＋ New Listing</button>'+summary+queue+'<h3>Your listings</h3><div class="owner-filters"><button type="button" class="button button-ghost" data-owner-filter="all" aria-pressed="true">All</button><button type="button" class="button button-ghost" data-owner-filter="published" aria-pressed="false">Published</button><button type="button" class="button button-ghost" data-owner-filter="draft" aria-pressed="false">Drafts</button></div>'+listings.map(item => `
+    content.innerHTML='<button type="button" class="button button-primary new-owner-listing">＋ New Listing</button>'+summary+queue+reviewActions+'<h3>Your listings</h3><div class="owner-filters"><button type="button" class="button button-ghost" data-owner-filter="all" aria-pressed="true">All</button><button type="button" class="button button-ghost" data-owner-filter="published" aria-pressed="false">Published</button><button type="button" class="button button-ghost" data-owner-filter="draft" aria-pressed="false">Drafts</button></div>'+listings.map(item => `
       <div class="owner-listing" data-listing-status="${escapeHTML(item.status)}" style="
         padding:15px;
         margin:12px 0;
@@ -332,6 +335,9 @@ ${item.status === "published" ? `
   }
 
   content.addEventListener("click", async event => {
+    const reviewButton=event.target.closest(".owner-rate-renter");
+    if(reviewButton){window.FlexiRentReviews?.open(reviewButton.dataset.booking,openDashboard);return;}
+
     if(event.target.closest(".new-owner-listing")){
       if(!window.FlexiRentNewListing?.open){
         window.FlexiRentNotice?.show("Listing form unavailable. Refresh and try again.","error");
