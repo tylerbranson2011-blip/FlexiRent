@@ -333,7 +333,14 @@ ${item.status === "published" ? `
 
   content.addEventListener("click", async event => {
     if(event.target.closest(".new-owner-listing")){
-      if(window.FlexiRentNewListing?.open)await window.FlexiRentNewListing.open();
+      if(!window.FlexiRentNewListing?.open){
+        window.FlexiRentNotice?.show("Listing form unavailable. Refresh and try again.","error");
+        return;
+      }
+      ++dashboardRequest;
+      modal.hidden=true;
+      try{await window.FlexiRentNewListing.open();}
+      catch(error){window.FlexiRentNotice?.show(error?.message||"Could not open listing form.","error");}
       return;
     }
     const response=event.target.closest(".owner-respond");
