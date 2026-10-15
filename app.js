@@ -79,7 +79,15 @@ function render(){
 let detailRequest=0;
 async function openDetails(id){
  const request=++detailRequest;
- const item=listings.find(x=>String(x.id)===String(id));if(!item)return;
+ let item=listings.find(x=>String(x.id)===String(id));
+ if(!item){
+  const {data:record,error}=await window.supabaseClient.from("listings").select("id,owner_id,title,description,category,city,state,price_per_day,price_per_hour,operator_option,image_url,status").eq("id",id).maybeSingle();
+  if(request!==detailRequest)return false;
+  if(error||!record){showToast("Listing details are unavailable.");return false;}
+  const names={trailer:"Trailers",rv:"Campers",equipment:"Heavy Equipment",light_equipment:"Light Equipment",boat:"Boats",jetski:"Jet Skis / PWCs",paddlecraft:"Kayaks, Canoes & Paddleboards"};
+  item={id:record.id,ownerId:record.owner_id,title:record.title||"Rental listing",categoryLabel:names[record.category]||"Rental",location:[record.city,record.state].filter(Boolean).join(", "),price:Number(record.price_per_day)||0,hourlyPrice:record.price_per_hour==null?null:Number(record.price_per_hour),operatorLabel:({without_operator:"Without operator",operator_available:"Operator available on request",operator_required:"Operator required"})[record.operator_option]||"Without operator",description:record.description||"No description provided.",image:record.image_url||""};
+ }
+
 
   detailContent.innerHTML = `
     <div id="detailGallery"></div>
@@ -130,6 +138,7 @@ async function openDetails(id){
   if(request!==detailRequest)return;
   window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image,photos:error?[]:photos||[],unavailable:Boolean(error)});
  }catch{if(request===detailRequest)window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image,unavailable:true});}
+ return true;
 }
 window.FlexiRentListing={open:openDetails};
 function closeDetails(){++detailRequest;modal.classList.add("hidden");document.body.style.overflow="";}
