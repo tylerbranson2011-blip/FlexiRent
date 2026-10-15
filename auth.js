@@ -41,7 +41,7 @@
                autocomplete="current-password"
                minlength="6" required>
 
-        <p id="authMessage" role="status"
+        <div id="accountTypeGroup" hidden>\n          <label for="accountType">I want to join as</label>\n          <select id="accountType" required disabled>\n            <option value="renter">Renter · Find and book rentals</option>\n            <option value="owner">Owner · List and manage rentals</option>\n          </select>\n          <p class="account-type-note">You can rent and list with the same account later. This choice sets your starting experience.</p>\n        </div>\n\n        <p id="authMessage" role="status"
            aria-live="polite"></p>
 
         <button id="authSubmit" type="submit">
@@ -95,7 +95,7 @@
       margin: 14px 0 7px;
       font-size: 14px;
     }
-    .auth-panel input {
+    .auth-panel input, .auth-panel select {
       display: block;
       width: 100%;
       box-sizing: border-box;
@@ -106,7 +106,7 @@
       border-radius: 9px;
       font-size: 16px;
     }
-    #authSubmit {
+    .auth-panel .account-type-note {font-size:12px;margin:8px 0 0;}\n    #authSubmit {
       width: 100%;
       margin-top: 18px;
       padding: 14px;
@@ -150,20 +150,20 @@
   const message = document.getElementById("authMessage");
   const submit = document.getElementById("authSubmit");
   const switchButton = document.getElementById("authSwitch");
-  const password = document.getElementById("authPassword");
+  const password = document.getElementById("authPassword");\n  const accountTypeGroup = document.getElementById("accountTypeGroup");\n  const accountType = document.getElementById("accountType");
 
   let mode = "login";
   let currentUser = null;
 
   function setMode(nextMode) {
     mode = nextMode;
-    form.reset();
+    form.reset();\n    accountTypeGroup.hidden = mode !== "signup";\n    accountType.disabled = mode !== "signup";
     message.textContent = "";
     title.textContent =
       mode === "signup" ? "Create your account" : "Welcome back";
     subtitle.textContent =
       mode === "signup"
-        ? "Join Flexi Rent to rent or list your ride."
+        ? "Choose how you want to get started on Flexi Rent."
         : "Log in to your Flexi Rent account.";
     submit.textContent =
       mode === "signup" ? "Create Account" : "Log In";
@@ -188,7 +188,7 @@
   function updateHeader() {
     if (currentUser) {
       loginButton.textContent = "Log Out";
-      signupButton.textContent = "My Account";
+      const type = currentUser.user_metadata?.account_type;\n      signupButton.textContent = type === "owner" ? "Owner Account" : type === "renter" ? "Renter Account" : "My Account";
     } else {
       loginButton.textContent = "Log In";
       signupButton.textContent = "Sign Up";
@@ -211,7 +211,7 @@
 
   signupButton.addEventListener("click", () => {
     if (currentUser) {
-      alert("Signed in as " + currentUser.email);
+      alert("Signed in as " + currentUser.email + "\\nAccount type: " + (currentUser.user_metadata?.account_type === "owner" ? "Owner" : currentUser.user_metadata?.account_type === "renter" ? "Renter" : "Not selected") + "\\nBoth renting and listing are available to every account.");
     } else {
       openModal("signup");
     }
@@ -247,7 +247,7 @@
           email,
           password: pass,
           options: {
-            emailRedirectTo: window.location.origin
+            emailRedirectTo: window.location.origin,\n            data: { account_type: accountType.value }
           }
         });
 
