@@ -174,6 +174,7 @@
   const becomeOwner = document.getElementById("becomeOwner");
   const verifyIdentity = document.getElementById("verifyIdentity");
   verifyIdentity.addEventListener("click", async () => {
+    if(verifyIdentity.dataset.verified==="true")return;
     verifyIdentity.disabled = true;
     message.textContent = "Starting secure Stripe verification...";
     try {
@@ -182,10 +183,32 @@
       if(!data?.url || !data.url.startsWith("https://verify.stripe.com/")) throw new Error(data?.error || "Verification is not configured yet.");
       window.location.assign(data.url);
     } catch(error) {message.textContent = error.message || "Verification unavailable. Try again later.";}
-    finally {verifyIdentity.disabled = false;}
+    finally {if(verifyIdentity.dataset.verified!=="true")verifyIdentity.disabled = false;}
   });
 
   let mode = "login";
+  let verificationRequest=0;
+  async function refreshVerificationStatus(userId,emailVerified){
+    const request=++verificationRequest;
+    verifyIdentity.disabled=true;
+    verifyIdentity.textContent="Checking verification...";
+    verifyIdentity.dataset.verified="false";
+    const {data,error}=await client.rpc("my_identity_verification_status");
+    if(request!==verificationRequest||currentUser?.id!==userId||overview.hidden)return;
+    if(!error&&data==="verified"){
+      verifyIdentity.dataset.verified="true";
+      verifyIdentity.textContent="✓ Identity Verified";
+      verifyIdentity.disabled=true;
+      verifyIdentity.classList.add("is-verified");
+      verification.textContent="Your identity has been verified with Stripe.";
+    }else{
+      verifyIdentity.dataset.verified="false";
+      verifyIdentity.textContent="🔒 Verify Identity with Stripe ↗";
+      verifyIdentity.classList.remove("is-verified");
+      verifyIdentity.disabled=!emailVerified;
+      verification.textContent=error?"Verification status could not be checked. Please try again.":!emailVerified?"Confirm your email before verifying your identity.":data==="processing"||data==="requires_input"?"Stripe verification is in progress or needs attention.":"Verify your identity securely with Stripe.";
+    }
+  }
   function showOverview() {
     if (!currentUser) return;
     const emailVerified = Boolean(currentUser.email_confirmed_at || currentUser.confirmed_at);
@@ -194,8 +217,9 @@
     overview.hidden = false;
     title.textContent = "My Flexi Rent Account";
     subtitle.textContent = currentUser.email || "Account";
-    verifyIdentity.disabled = !emailVerified;
-    verification.textContent = emailVerified ? "Email verified. Identity verification is not yet available. It will be required before rentals or listings can be activated." : "Email not verified. Confirm your email first. Identity verification is also required before rentals or listings can be activated.";
+    verifyIdentity.disabled=true;
+    verifyIdentity.textContent="Checking verification...";
+    refreshVerificationStatus(currentUser.id,emailVerified);
     becomeOwner.hidden = currentUser.user_metadata?.account_type === "owner";
     message.textContent = "";
   }
