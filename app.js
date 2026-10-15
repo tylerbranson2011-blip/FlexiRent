@@ -143,7 +143,7 @@ modal.addEventListener("click",e=>{if(e.target===modal)closeDetails();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDetails();});
 
 
-document.getElementById("menuToggle").addEventListener("click",()=>{showToast("Use Explore below to browse listings. Mobile navigation will expand in the next pass.");});
+
 document.getElementById("year").textContent=new Date().getFullYear();
 loadRealListings();
 async function loadRealListings() {
