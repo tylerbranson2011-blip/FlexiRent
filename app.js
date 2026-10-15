@@ -54,11 +54,13 @@ let selectedCategory="all";
 let toastTimer;
 const escapeHTML=(value)=>String(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 function showToast(message){toast.textContent=message;toast.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove("show"),2800);}
+function displayRate(item){return rateType.value==="hour"?item.hourlyPrice:item.price;}
+function priceMatches(item,max){if(rateType.value==="any")return item.price<=max||(item.hourlyPrice!=null&&item.hourlyPrice<=max);const value=displayRate(item);return value!=null&&value<=max;}
 function filteredListings(){
  const cat=categorySelect.value;
  const max=Number(priceSelect.value);
  const loc=locationInput.value.trim().toLowerCase();
- let result=listings.filter(item=>(cat==="all"||item.category===cat)&&(selectedCategory==="all"||item.category===selectedCategory)&&(rateType.value==="day"?item.price:item.hourlyPrice)!=null&&(rateType.value==="day"?item.price:item.hourlyPrice)<=max&&(operatorFilter.value==="all"||item.operatorOption===operatorFilter.value)&&(!locationSearchActive||(searchCenter&&item.coords&&milesBetween(searchCenter,item.coords)<=Number(distanceRadius.value))));
+ let result=listings.filter(item=>(cat==="all"||item.category===cat)&&(selectedCategory==="all"||item.category===selectedCategory)&&priceMatches(item,max)&&(operatorFilter.value==="all"||item.operatorOption===operatorFilter.value)&&(!locationSearchActive||(searchCenter&&item.coords&&milesBetween(searchCenter,item.coords)<=Number(distanceRadius.value))));
  if(sortSelect.value==="low")result.sort((a,b)=>(rateType.value==="hour"?a.hourlyPrice:a.price)-(rateType.value==="hour"?b.hourlyPrice:b.price));
  if(sortSelect.value==="high")result.sort((a,b)=>(rateType.value==="hour"?b.hourlyPrice:b.price)-(rateType.value==="hour"?a.hourlyPrice:a.price));
  return result;
@@ -69,7 +71,7 @@ function render(){
  <div class="listing-image"><img src="${item.image}" alt="${escapeHTML(item.title)}" loading="lazy" onerror="this.style.opacity='.2';this.alt='Rental photo unavailable'"><span class="image-badge">${escapeHTML(item.badge)}</span><button class="favorite" data-favorite="${item.id}" aria-label="Save ${escapeHTML(item.title)} to favorites">♡</button></div>
  <div class="listing-info"><div class="listing-category">${escapeHTML(item.categoryLabel)}</div><h4>${escapeHTML(item.title)}</h4><div class="listing-location">⌖ ${escapeHTML(item.location)}${locationSearchActive&&searchCenter&&item.coords?" · "+Math.round(milesBetween(searchCenter,item.coords))+" mi away":""}</div>
  <div class="listing-meta"><span>◷ ${escapeHTML(item.seats)}</span><span>⚙ ${escapeHTML(item.operatorLabel)}</span></div>
- <div class="listing-bottom"><div class="price"><strong>${rateType.value==="hour"?item.hourlyPrice:item.price}</strong> <small>/ ${rateType.value==="hour"?"hour":"day"}</small><div class="price-note">Listed daily rate</div></div><button class="details-button" data-details="${item.id}">View details ↗</button></div></div></article>`).join("");
+ <div class="listing-bottom"><div class="price"><strong>${rateType.value==="hour"?item.hourlyPrice:item.price}</strong> <small>/ ${rateType.value==="hour"?"hour":"day"}</small>${rateType.value==="any"&&item.hourlyPrice!=null?`<div class="price-note">${item.hourlyPrice} / hour also available</div>`:`<div class="price-note">Listed ${rateType.value==="hour"?"hourly":"daily"} rate</div>`}</div><button class="details-button" data-details="${item.id}">View details ↗</button></div></div></article>`).join("");
  emptyState.classList.toggle("hidden",items.length>0);
  grid.classList.toggle("hidden",items.length===0);
  resultsText.textContent=locationError||`${items.length} ${items.length===1?"rental":"rentals"} found.${locationSearchActive?" Within "+distanceRadius.value+" miles (straight-line distance).":""}`;
@@ -135,7 +137,7 @@ document.getElementById("categoryPills").addEventListener("click",e=>{const pill
 categorySelect.addEventListener("change",()=>{selectedCategory="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p.dataset.category==="all"));render();});
 distanceRadius.addEventListener("change",runLocationSearch);priceSelect.addEventListener("change",render);rateType.addEventListener("change",render);operatorFilter.addEventListener("change",render);sortSelect.addEventListener("change",render);
 grid.addEventListener("click",e=>{const detail=e.target.closest("[data-details]");if(detail){openDetails(detail.dataset.details);return;}const favorite=e.target.closest("[data-favorite]");if(favorite){favorite.classList.toggle("saved");favorite.textContent=favorite.classList.contains("saved")?"♥":"♡";showToast(favorite.classList.contains("saved")?"Saved for this demo session":"Removed from demo favorites");}});
-document.getElementById("resetFilters").addEventListener("click",()=>{categorySelect.value="all";priceSelect.value="9999";rateType.value="day";operatorFilter.value="all";locationInput.value="";distanceRadius.value="50";searchCenter=null;locationSearchActive=false;locationError="";sortSelect.value="recommended";selectedCategory="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p.dataset.category==="all"));render();});
+document.getElementById("resetFilters").addEventListener("click",()=>{categorySelect.value="all";priceSelect.value="9999";rateType.value="any";operatorFilter.value="all";locationInput.value="";distanceRadius.value="50";searchCenter=null;locationSearchActive=false;locationError="";sortSelect.value="recommended";selectedCategory="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p.dataset.category==="all"));render();});
 document.getElementById("closeModal").addEventListener("click",closeDetails);
 modal.addEventListener("click",e=>{if(e.target===modal)closeDetails();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDetails();});
