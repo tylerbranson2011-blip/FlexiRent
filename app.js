@@ -125,11 +125,13 @@ async function loadRealListings() {
     return;
   }
 
-  listings = (data || []).map(item => ({
+  const supportedCategories=new Set(["trailer","rv","equipment","light_equipment"]);
+  const categoryNames={trailer:"Trailers",rv:"Campers",equipment:"Heavy Equipment",light_equipment:"Light Equipment"};
+  listings = (data || []).filter(item=>supportedCategories.has(item.category)).map(item => ({
     id: item.id,
     title: item.title || "Untitled rental",
     category: item.category || "equipment",
-    categoryLabel: item.category || "Rental",
+    categoryLabel: categoryNames[item.category] || "Rental",
     location: [item.city, item.state].filter(Boolean).join(", "),
     price: Number(item.price_per_day) || 0,
     period: "day",
