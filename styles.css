@@ -152,3 +152,10 @@ body {
 .account-shortcuts .account-shortcut[hidden]{display:none!important}
 
 .owner-request{flex-wrap:wrap}.owner-request-actions{display:flex;gap:7px;flex-wrap:wrap}.owner-request-actions button{min-height:40px}
+
+.action-notice{position:fixed;top:max(18px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 28px);z-index:2147483647;display:flex;align-items:center;gap:12px;background:#163627;color:#f3fff6;border:1px solid #45b97a;border-radius:14px;padding:14px 15px;box-shadow:0 15px 45px #0009;font-size:14px;font-weight:700;line-height:1.35}
+.action-notice[hidden]{display:none!important}
+.action-notice[data-type="error"]{background:#4b2323;border-color:#ef7878;color:#fff4f4}
+.action-notice-icon{font-size:20px;flex:none}
+.action-notice-text{flex:1;min-width:0;overflow-wrap:anywhere}
+.action-notice button{background:transparent;border:0;color:inherit;font-size:23px;cursor:pointer;padding:0 2px}
