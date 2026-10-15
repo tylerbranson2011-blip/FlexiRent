@@ -14,8 +14,10 @@ await page.evaluate(()=>{
  window.supabaseClient={auth:{
  signUp:async payload=>{window.signups.push(payload);return {data:{user:{id:"new-user",email:payload.email,user_metadata:payload.options.data},session:{access_token:"test"}},error:null}},
  signInWithPassword:async()=>({data:{user:{id:"existing",email:"existing@example.com",user_metadata:{account_type:"renter"}}},error:null}),
- updateUser:async ({data})=>({data:{user:{id:"new-user",email:"renter@example.com",email_confirmed_at:"2026-10-14T00:00:00Z",user_metadata:data}},error:null}),\n signOut:async()=>({error:null}),
+ updateUser:async ({data})=>({data:{user:{id:"new-user",email:"renter@example.com",email_confirmed_at:"2026-10-14T00:00:00Z",user_metadata:data}},error:null}),
+ signOut:async()=>({error:null}),
  getUser:async()=>({data:{user:null},error:null}),
+
  onAuthStateChange:cb=>{callbacks.push(cb);return {data:{subscription:{unsubscribe(){}}}}}
  }};
 });
@@ -28,7 +30,14 @@ await page.locator("#authEmail").fill(type+"@example.com");
 await page.locator("#authPassword").fill("test-password-123");
 await page.locator("#authSubmit").click();
 await page.waitForFunction(expected=>window.signups.some(x=>x.options.data.account_type===expected),type);
-assert.equal(await page.locator("#signupButton").innerText(),type==="owner"?"Owner Account":"Renter Account");\nif(type==="renter"){\n await page.locator("#signupButton").click();\n await page.locator("#becomeOwner").click();\n assert.equal(await page.locator("#signupButton").innerText(),"Owner Account");\n await page.getByText("Identity verification is not yet available",{exact:false}).waitFor();\n await page.locator(".auth-close").click();\n}
+assert.equal(await page.locator("#signupButton").innerText(),type==="owner"?"Owner Account":"Renter Account");
+if(type==="renter"){
+ await page.locator("#signupButton").click();
+ await page.locator("#becomeOwner").click();
+ assert.equal(await page.locator("#signupButton").innerText(),"Owner Account");
+ await page.getByText("Identity verification is not yet available",{exact:false}).waitFor();
+ await page.locator(".auth-close").click();
+}
 await page.locator("#loginButton").click();
 }
 await page.locator("#loginButton").click();
