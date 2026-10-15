@@ -150,3 +150,5 @@ body {
 .owner-listing[hidden]{display:none!important}
 
 .account-shortcuts .account-shortcut[hidden]{display:none!important}
+
+.owner-request{flex-wrap:wrap}.owner-request-actions{display:flex;gap:7px;flex-wrap:wrap}.owner-request-actions button{min-height:40px}
