@@ -18,9 +18,10 @@
     <button class="button button-ghost header-action" id="listTop">＋ List your vehicle</button>
     <button class="button button-ghost header-action" id="loginButton">Log In</button>
 <button class="button button-primary header-action" id="signupButton">Sign Up</button>
-    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">☰</button>
+    <button class="menu-toggle" id="menuToggle" aria-label="Account menu" aria-expanded="false" aria-controls="accountMenu">☰</button>
   </header>
 
+  <div id="accountMenu" class="account-menu" hidden></div>
   <div id="accountShortcuts" class="account-shortcuts" aria-label="Account shortcuts"></div>
 
   <main>
@@ -124,6 +125,7 @@
   <script src="photo-editor.js"></script>
   <script src="action-notice.js"></script>
   <script src="dashboard.js"></script>
+  <script src="account-menu.js"></script>
   <script src="booking.js"></script>
   <script src="notifications.js"></script>
   <script src="my-rentals.js"></script>
