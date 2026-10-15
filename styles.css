@@ -136,3 +136,15 @@ body {
 .account-shortcuts{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--line)}
 .account-shortcuts:empty{display:none}
 .account-shortcuts .account-shortcut{margin:0;flex:none;width:auto}
+
+/* Owner dashboard overview */
+.owner-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}
+.owner-stat{border:1px solid var(--line);border-radius:12px;background:var(--panel2);padding:14px 10px;display:flex;flex-direction:column;gap:4px}
+.owner-stat strong{font-size:25px;color:var(--orange2);line-height:1.1}
+.owner-stat span{font-size:12px;color:var(--muted)}
+.owner-requests{display:grid;gap:8px}
+.owner-request{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px}
+.owner-request small{display:block;color:var(--muted);margin-top:4px}
+.owner-filters{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.owner-filters [aria-pressed="true"]{border-color:var(--orange);background:var(--panel2)}
+.owner-listing[hidden]{display:none!important}
