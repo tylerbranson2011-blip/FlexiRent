@@ -122,8 +122,8 @@
     ].map(([label,value])=>'<div class="owner-stat"><strong>'+value+'</strong><span>'+label+'</span></div>').join("")+'</div>';
     const approvedList=requestsError?'':('<section class="approved-bookings-section"><button type="button" class="approved-bookings-toggle" aria-expanded="false" aria-controls="approvedBookingsList"><span>✅ Approved bookings ('+approved.length+')</span><span class="approved-chevron" aria-hidden="true">▾</span></button><div id="approvedBookingsList" hidden>'+ (approved.length?approved.map(r=>{
       const listing=listings.find(l=>l.id===r.listing_id);
-      const date=s=>/^\\d{4}-\\d{2}-\\d{2}$/.test(s||"")?s.slice(5,7)+"/"+s.slice(8,10)+"/"+s.slice(0,4):s||"Not set";
-      const time=s=>{const m=/^(\\d{2}):(\\d{2})/.exec(s||"");if(!m)return "Not set";const h=Number(m[1]);return (h%12||12)+":"+m[2]+" "+(h<12?"AM":"PM");};
+      const date=s=>/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(s||"")?s.slice(5,7)+"/"+s.slice(8,10)+"/"+s.slice(0,4):s||"Not set";
+      const time=s=>{const m=/^([0-9]{2}):([0-9]{2})/.exec(s||"");if(!m)return "Not set";const h=Number(m[1]);return (h%12||12)+":"+m[2]+" "+(h<12?"AM":"PM");};
       return '<article class="approved-booking-card"><strong>'+escapeHTML(listing?.title||"Rental")+'</strong><p>Pickup: '+escapeHTML(date(r.start_date))+' at '+escapeHTML(time(r.pickup_time))+'</p><p>Return: '+escapeHTML(date(r.end_date))+' at '+escapeHTML(time(r.return_time))+'</p>'+(r.booking_timezone?'<p>Time zone: '+escapeHTML(r.booking_timezone)+'</p>':'')+'<button type="button" class="approved-renter-profile button button-ghost" data-booking="'+escapeHTML(r.id)+'">👤 View renter profile</button></article>';
     }).join(""):'<p>No approved rentals yet.</p>')+'</div></section>');
     const reviewsQueue=allRequests.filter(r=>reviewEligible.has(r.id));
