@@ -119,11 +119,11 @@
       ["Total listings",listings.length],["Published",published.length],["Pending requests",requestsError?"—":pending.length],["Approved bookings",requestsError?"—":approved.length]
     ].map(([label,value])=>'<div class="owner-stat"><strong>'+value+'</strong><span>'+label+'</span></div>').join("")+'</div>';
     const queue=requestsError?'<p role="status">Booking summary unavailable: '+escapeHTML(requestsError.message)+'</p>':
-      '<h3>Recent booking requests</h3>'+(allRequests.length?
-      '<div class="owner-requests">'+allRequests.slice(0,8).map(r=>{
+      '<h3>Pending booking requests</h3>'+(pending.length?
+      '<div class="owner-requests">'+pending.map(r=>{
         const listing=listings.find(l=>l.id===r.listing_id);
-        return '<div class="owner-request"><div><strong>'+escapeHTML(listing?.title||"Rental")+'</strong><small>'+escapeHTML(r.start_date)+' to '+escapeHTML(r.end_date)+' · '+escapeHTML(effectiveStatus(r))+'</small></div><button type="button" class="manage-booking-dates button button-ghost" data-id="'+escapeHTML(r.listing_id)+'">Manage</button></div>';
-      }).join("")+'</div>':'<p>No booking requests yet.</p>');
+        return '<div class="owner-request"><div><strong>'+escapeHTML(listing?.title||"Rental")+'</strong><small>'+escapeHTML(r.start_date)+' to '+escapeHTML(r.end_date)+' · '+escapeHTML(effectiveStatus(r))+'</small></div><div class="owner-request-actions"><button type="button" class="owner-respond button button-primary" data-request="'+escapeHTML(r.id)+'" data-approve="true">Approve</button><button type="button" class="owner-respond button button-ghost" data-request="'+escapeHTML(r.id)+'" data-approve="false">Decline</button><button type="button" class="manage-booking-dates button button-ghost" data-id="'+escapeHTML(r.listing_id)+'">Details</button></div></div>';
+      }).join("")+'</div>':'<p>No pending booking requests.</p>');
     content.innerHTML=summary+queue+'<h3>Your listings</h3><div class="owner-filters"><button type="button" class="button button-ghost" data-owner-filter="all" aria-pressed="true">All</button><button type="button" class="button button-ghost" data-owner-filter="published" aria-pressed="false">Published</button><button type="button" class="button button-ghost" data-owner-filter="draft" aria-pressed="false">Drafts</button></div>'+listings.map(item => `
       <div class="owner-listing" data-listing-status="${escapeHTML(item.status)}" style="
         padding:15px;
@@ -330,7 +330,23 @@ ${item.status === "published" ? `
     openDashboard();
   }
 
-  content.addEventListener("click", event => {
+  content.addEventListener("click", async event => {
+    const response=event.target.closest(".owner-respond");
+    if(response){
+      const id=response.dataset.request,approve=response.dataset.approve==="true";
+      if(!confirm(approve?"Approve this booking request?":"Decline this booking request?"))return;
+      const {data:{user},error:authError}=await client.auth.getUser();
+      if(authError||!user){alert("Please log in again.");return;}
+      const {data:role,error:roleError}=await client.from("account_roles").select("account_type").eq("user_id",user.id).maybeSingle();
+      if(roleError||role?.account_type!=="owner"){alert("Owner account required.");return;}
+      const controls=[...content.querySelectorAll(".owner-respond")].filter(b=>b.dataset.request===id);
+      controls.forEach(b=>b.disabled=true);
+      const result=await client.rpc("respond_booking",{p_request:id,p_approve:approve});
+      if(result.error){alert("Could not update request: "+result.error.message);controls.forEach(b=>b.disabled=false);}
+      else{alert(approve?"Booking approved!":"Booking declined.");openDashboard();}
+      return;
+    }
+
     const editButton = event.target.closest(".edit-listing");
 
     if (editButton) {
