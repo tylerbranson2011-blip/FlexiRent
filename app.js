@@ -80,8 +80,8 @@ async function openDetails(id){
   window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image});
   modal.classList.remove("hidden");
   document.body.style.overflow = "hidden";
-  document.getElementById("demoBook").addEventListener("click",()=>showToast("Booking isn't connected yet. Next step: add accounts and a real booking database."));
- document.getElementById("demoContact").addEventListener("click",()=>showToast("Owner messaging isn't connected yet. We'll add it after account setup."));
+  document.getElementById("demoBook").addEventListener("click",()=>showToast("Owner inquiries are not active yet. The connection-only platform is undergoing safety review."));
+ document.getElementById("demoContact").addEventListener("click",()=>showToast("Read the renter responsibilities at legal.html#renter before contacting an owner."));
  try {
   const {data:photos,error}=await window.supabaseClient.from("listing_photos").select("image_url,position").eq("listing_id",item.id).order("position",{ascending:true});
   if(request!==detailRequest)return;
