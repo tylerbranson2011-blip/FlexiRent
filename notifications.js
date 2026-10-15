@@ -25,9 +25,12 @@ async function load(){
    if(!n.booking_id){items.textContent="This notification has no linked booking.";return;}
    const {data:booking,error:bookingError}=await client.from("booking_requests").select("listing_id").eq("id",n.booking_id).maybeSingle();
    if(bookingError||!booking?.listing_id){items.textContent="Unable to open this booking. It may no longer be available.";return;}
-   if(!window.FlexiRentBooking?.open){items.textContent="Booking screen is unavailable. Please refresh.";return;}
+   const ownerNotification=n.kind==="booking_requested";
+   if(ownerNotification&&!window.FlexiRentBooking?.open){items.textContent="Booking screen is unavailable. Please refresh.";return;}
+   if(!ownerNotification&&!window.FlexiRentListing?.open){items.textContent="Listing details are unavailable. Please refresh.";return;}
    panel.hidden=true;
-   await window.FlexiRentBooking.open(booking.listing_id,n.kind==="booking_requested");
+   if(ownerNotification)await window.FlexiRentBooking.open(booking.listing_id,true);
+   else await window.FlexiRentListing.open(booking.listing_id);
    await load();
   };
   el.addEventListener("click",e=>{if(e.target.closest("[data-read]"))return;activate();});
