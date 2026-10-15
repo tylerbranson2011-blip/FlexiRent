@@ -68,10 +68,10 @@ async function openDetails(id){
 
       <div class="detail-actions">
         <button class="button button-primary" id="demoBook">
-          Booking coming soon
+          Contact owner (not yet available)
         </button>
         <button class="button button-ghost" id="demoContact">
-          Messaging coming soon
+          Read renter responsibilities
         </button>
       </div>
     </div>
@@ -125,7 +125,7 @@ async function loadRealListings() {
     return;
   }
 
-  listings = (data || []).map(item => ({
+  listings = (data || []).filter(item => ["trailer", "rv", "equipment"].includes(item.category)).map(item => ({
     id: item.id,
     title: item.title || "Untitled rental",
     category: item.category || "equipment",
@@ -135,7 +135,7 @@ async function loadRealListings() {
     period: "day",
     seats: "Details available",
     transmission: "Ask owner",
-    badge: "AVAILABLE",
+    badge: "OWNER-POSTED",
     image: item.image_url || "",
     description: item.description || "No description provided."
   }));
