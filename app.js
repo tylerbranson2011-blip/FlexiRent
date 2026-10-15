@@ -84,7 +84,7 @@ async function openDetails(id){
   const {data:record,error}=await window.supabaseClient.from("listings").select("id,owner_id,title,description,category,city,state,price_per_day,price_per_hour,operator_option,image_url,status").eq("id",id).maybeSingle();
   if(request!==detailRequest)return false;
   if(error||!record){showToast("Listing details are unavailable.");return false;}
-  const names={trailer:"Trailers",rv:"Campers",equipment:"Heavy Equipment",light_equipment:"Light Equipment",boat:"Boats",jetski:"Jet Skis / PWCs",paddlecraft:"Kayaks, Canoes & Paddleboards"};
+  const names={trailer:"Trailers",rv:"Campers",equipment:"Heavy Equipment",light_equipment:"Light Equipment",boat:"Boats",atv_utv:"ATVs / UTVs",jetski:"Jet Skis / PWCs",paddlecraft:"Kayaks, Canoes & Paddleboards"};
   item={id:record.id,ownerId:record.owner_id,title:record.title||"Rental listing",categoryLabel:names[record.category]||"Rental",location:[record.city,record.state].filter(Boolean).join(", "),price:Number(record.price_per_day)||0,hourlyPrice:record.price_per_hour==null?null:Number(record.price_per_hour),operatorLabel:({without_operator:"Without operator",operator_available:"Operator available on request",operator_required:"Operator required"})[record.operator_option]||"Without operator",description:record.description||"No description provided.",image:record.image_url||""};
  }
 
@@ -179,8 +179,8 @@ async function loadRealListings() {
     return;
   }
 
-  const supportedCategories=new Set(["trailer","rv","equipment","light_equipment","boat","jetski","paddlecraft"]);
-  const categoryNames={trailer:"Trailers",rv:"Campers",equipment:"Heavy Equipment",light_equipment:"Light Equipment",boat:"Boats",jetski:"Jet Skis / PWCs",paddlecraft:"Kayaks, Canoes & Paddleboards"};
+  const supportedCategories=new Set(["trailer","rv","equipment","light_equipment","boat","atv_utv","jetski","paddlecraft"]);
+  const categoryNames={trailer:"Trailers",rv:"Campers",equipment:"Heavy Equipment",light_equipment:"Light Equipment",boat:"Boats",atv_utv:"ATVs / UTVs",jetski:"Jet Skis / PWCs",paddlecraft:"Kayaks, Canoes & Paddleboards"};
   listings = (data || []).filter(item=>supportedCategories.has(item.category)).map(item => ({
     id: item.id,
     title: item.title || "Untitled rental",
