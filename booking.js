@@ -29,6 +29,43 @@ async function refresh(){
  '<form id="bookingForm"><label>Pickup date <input type="date" name="start" required></label><label>Return date <input type="date" name="end" required></label><button class="button button-primary" type="submit">'+(ownerMode?"Block dates":"Request booking")+'</button></form>'+
  (ownerMode?'<h3>Booking requests</h3>'+(requests.length?requests.map(x=>'<div class="booking-request"><p>'+esc(x.start_date)+' to '+esc(x.end_date)+' · '+esc(x.status==="pending"&&new Date(x.expires_at)<=new Date()?"expired":x.status)+'</p>'+(x.status==="pending"&&new Date(x.expires_at)>new Date()?'<button data-respond="'+esc(x.id)+'" data-approve="true">Approve</button> <button data-respond="'+esc(x.id)+'" data-approve="false">Decline</button>':'')+'</div>').join(""):'<p>No requests yet.</p>'):'<p>Owners have 24 hours to approve. Unanswered requests expire automatically.</p>');
  const form=body.querySelector("#bookingForm");
+ if(!ownerMode){
+  const unavailable=(a.data||[]).map(x=>({start:x.start_date,end:x.end_date}));
+  const today=new Date();today.setHours(0,0,0,0);
+  const iso=d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");
+  const addDay=d=>{const n=new Date(d);n.setDate(n.getDate()+1);return n;};
+  const blocked=d=>unavailable.some(x=>iso(d)>=x.start&&iso(d)<x.end);
+  const inputs=[form.elements.start,form.elements.end];
+  let selectedStart=null;
+  inputs.forEach((input,index)=>{
+   input.type="text";input.readOnly=true;input.placeholder="Tap to choose a date";input.autocomplete="off";
+   input.setAttribute("aria-label",index?"Choose return date":"Choose pickup date");
+   const picker=document.createElement("div");picker.className="booking-calendar";picker.hidden=true;
+   input.insertAdjacentElement("afterend",picker);
+   let month=new Date(today.getFullYear(),today.getMonth(),1);
+   function render(){
+    const first=new Date(month.getFullYear(),month.getMonth(),1);
+    const count=new Date(month.getFullYear(),month.getMonth()+1,0).getDate();
+    const startDay=first.getDay();
+    const cells=Array.from({length:startDay},()=>'<span></span>');
+    for(let day=1;day<=count;day++){
+     const d=new Date(month.getFullYear(),month.getMonth(),day),value=iso(d);
+     const invalid=d<today||blocked(d)||(index===1&&(!selectedStart||d<=selectedStart||(()=>{for(let p=addDay(selectedStart);p<d;p=addDay(p))if(blocked(p))return true;return false;})()));
+     cells.push('<button type="button" data-date="'+value+'" '+(invalid?'disabled':'')+' aria-label="'+value+'">'+day+'</button>');
+    }
+    picker.innerHTML='<div class="booking-calendar-header"><button type="button" data-month="-1" aria-label="Previous month">‹</button><strong>'+month.toLocaleDateString(undefined,{month:"long",year:"numeric"})+'</strong><button type="button" data-month="1" aria-label="Next month">›</button></div><div class="booking-calendar-grid">'+["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(x=>'<b>'+x+'</b>').join("")+cells.join("")+'</div><small>Unavailable dates are disabled.</small>';
+    picker.querySelectorAll("[data-month]").forEach(b=>b.onclick=()=>{month=new Date(month.getFullYear(),month.getMonth()+Number(b.dataset.month),1);render();});
+    picker.querySelectorAll("[data-date]").forEach(b=>b.onclick=()=>{
+     input.value=b.dataset.date;
+     if(index===0){selectedStart=new Date(b.dataset.date+"T12:00:00");inputs[1].value="";}
+     picker.hidden=true;
+     if(index===0)inputs[1].click();
+    });
+   }
+   input.addEventListener("click",()=>{inputs.forEach(el=>{const p=el.nextElementSibling;if(p!==picker&&p?.classList.contains("booking-calendar"))p.hidden=true;});picker.hidden=!picker.hidden;if(!picker.hidden)render();});
+  });
+ }
+
  form.elements.start.min=[new Date().getFullYear(),String(new Date().getMonth()+1).padStart(2,"0"),String(new Date().getDate()).padStart(2,"0")].join("-");
  form.elements.end.min=form.elements.start.min;
  form.addEventListener("submit",async e=>{
