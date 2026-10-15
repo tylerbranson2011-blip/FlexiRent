@@ -179,7 +179,7 @@
     try {
       const {data,error} = await client.functions.invoke("start-identity-verification", {body:{}});
       if(error) throw error;
-      if(!data?.url || !/^https:\\/\\/verify\\.stripe\\.com\\//.test(data.url)) throw new Error(data?.error || "Verification is not configured yet.");
+      if(!data?.url || !data.url.startsWith("https://verify.stripe.com/")) throw new Error(data?.error || "Verification is not configured yet.");
       window.location.assign(data.url);
     } catch(error) {message.textContent = error.message || "Verification unavailable. Try again later.";}
     finally {verifyIdentity.disabled = false;}
