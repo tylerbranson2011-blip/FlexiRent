@@ -1,0 +1,13 @@
+(()=>{"use strict";
+const client=window.supabaseClient;if(!client)return;
+const modal=document.createElement("div");modal.className="auth-backdrop";modal.hidden=true;
+modal.innerHTML='<div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="reviewTitle"><button class="auth-close" type="button">×</button><h2 id="reviewTitle">Rate your rental experience</h2><form id="reviewForm"><label for="reviewStars">Your rating</label><select id="reviewStars" required><option value="5">★★★★★ 5 - Excellent</option><option value="4">★★★★☆ 4 - Good</option><option value="3">★★★☆☆ 3 - Okay</option><option value="2">★★☆☆☆ 2 - Poor</option><option value="1">★☆☆☆☆ 1 - Very poor</option></select><label for="reviewComment">Review (optional)</label><textarea id="reviewComment" maxlength="500" rows="4" placeholder="How did the rental go?"></textarea><p id="reviewStatus" role="status"></p><button class="button button-primary" type="submit">Submit rating</button></form></div>';
+document.body.appendChild(modal);
+const form=modal.querySelector("form"),status=modal.querySelector("#reviewStatus");let booking=null,refresh=null;
+function close(){modal.hidden=true;booking=null;}
+modal.querySelector(".auth-close").addEventListener("click",close);modal.addEventListener("click",e=>{if(e.target===modal)close();});
+function open(id,onSaved){booking=id;refresh=onSaved;form.reset();status.textContent="";modal.hidden=false;}
+form.addEventListener("submit",async e=>{e.preventDefault();if(!booking)return;const submit=form.querySelector("button[type=submit]");submit.disabled=true;status.textContent="Saving review...";try{const {error}=await client.rpc("submit_rental_review",{p_booking:booking,p_stars:Number(form.querySelector("#reviewStars").value),p_comment:form.querySelector("#reviewComment").value.trim()});if(error)throw error;window.FlexiRentNotice?.show("Rating submitted!");close();if(typeof refresh==="function")refresh();}catch(error){status.textContent=error.message||"Unable to submit review.";}finally{submit.disabled=false;}});
+async function eligibility(bookings,role,userId){const finished=bookings.filter(b=>b.status==="approved"&&new Date(b.end_date+"T23:59:59Z")<new Date());if(!finished.length)return new Set();const ids=finished.map(b=>b.id);const {data,error}=await client.from("rental_reviews").select("booking_id").eq("reviewer_id",userId).eq("reviewer_role",role).in("booking_id",ids);if(error)return new Set();const done=new Set((data||[]).map(x=>x.booking_id));return new Set(ids.filter(id=>!done.has(id)));}
+window.FlexiRentReviews={open,eligibility};
+})();
