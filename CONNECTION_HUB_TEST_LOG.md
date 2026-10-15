@@ -21,3 +21,9 @@ Status: preliminary test passed for simplified constraint logic; full security e
 - Result: **PASS: rejected** for both car and equipment without owner consent.
 - Issued ROLLBACK; no permanent database changes from this test.
 - These tests use SQL administrative context and do not replace authenticated-user REST/RLS tests.
+
+## Server-controlled consent RPC rollback tests
+- Ran revised consent schema, publishing guard and acceptance RPC inside one rollback transaction.
+- **PASS:** unauthenticated SQL context cannot accept terms (`Verified login required`).
+- **PASS:** published car update blocked by trigger.
+- Rollback preserved live schema. Further signed-in user, grant and spoofing tests remain required.
