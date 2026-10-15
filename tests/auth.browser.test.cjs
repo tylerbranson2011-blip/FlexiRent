@@ -37,7 +37,7 @@ if(type==="renter"){
  assert.equal(await page.locator("#signupButton").innerText(),"Owner Account");
  await page.locator("#verifyIdentity").click();
  await page.waitForFunction(()=>window.stripeCalls.includes("start-identity-verification"));
- await page.getByText("Identity verification is not configured yet",{exact:false}).waitFor();
+ await page.waitForFunction(()=>document.getElementById("authMessage")?.textContent?.includes("Identity verification is not configured yet"));
  await page.locator(".auth-close").click();
 }
 await page.locator("#loginButton").click();
