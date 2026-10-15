@@ -16,18 +16,42 @@ shell.addEventListener("click",e=>{if(e.target===shell)close();});
 async function refresh(){
  if(!listingId)return;
  const id=listingId;
- const [b,r,a]=await Promise.all([
+ const [b,r,a,scheduleResult]=await Promise.all([
  client.from("listing_blocks").select("id,start_date,end_date").eq("listing_id",id).order("start_date"),
- client.from("booking_requests").select("id,start_date,end_date,status,expires_at,renter_id").eq("listing_id",id).order("created_at",{ascending:false}),
- client.rpc("listing_unavailable_dates",{p_listing:id})
+ client.from("booking_requests").select("id,start_date,end_date,pickup_time,return_time,booking_timezone,status,expires_at,renter_id").eq("listing_id",id).order("created_at",{ascending:false}),
+ client.rpc("listing_unavailable_dates",{p_listing:id}),
+ client.from("listing_pickup_hours").select("timezone,open_time,close_time").eq("listing_id",id).maybeSingle()
  ]);
  if(id!==listingId)return;
- if(b.error||r.error||a.error){body.textContent=(b.error||r.error||a.error).message;return;}
+ if(b.error||r.error||a.error||scheduleResult.error){body.textContent=(b.error||r.error||a.error||scheduleResult.error).message;return;}
+ const schedule=scheduleResult.data;
  const blocks=b.data||[],requests=r.data||[];
  const dates=[...blocks.map(x=>({id:x.id,start:x.start_date,end:x.end_date,label:"Owner blocked"})),...(a.data||[]).filter(x=>x.reason==="reserved").map(x=>({start:x.start_date,end:x.end_date,label:"Unavailable"}))];
  body.innerHTML='<h3>Unavailable dates</h3>'+(dates.length?'<ul>'+dates.map(x=>'<li>'+esc(x.start)+' to '+esc(x.end)+' ('+esc(x.label)+')'+(ownerMode&&x.id?' <button type="button" data-unblock="'+esc(x.id)+'" aria-label="Unblock '+esc(x.start)+' to '+esc(x.end)+'">Unblock dates</button>':'')+'</li>').join("")+'</ul>':'<p>No dates blocked yet.</p>')+
- '<form id="bookingForm"><label>Pickup date <input type="date" name="start" required></label><label>Return date <input type="date" name="end" required></label><button class="button button-primary" type="submit">'+(ownerMode?"Block dates":"Request booking")+'</button></form>'+
- (ownerMode?'<h3>Booking requests</h3>'+(requests.length?requests.map(x=>'<div class="booking-request"><p>'+esc(x.start_date)+' to '+esc(x.end_date)+' · '+esc(x.status==="pending"&&new Date(x.expires_at)<=new Date()?"expired":x.status)+'</p>'+(x.status==="pending"&&new Date(x.expires_at)>new Date()?'<button data-respond="'+esc(x.id)+'" data-approve="true">Approve</button> <button data-respond="'+esc(x.id)+'" data-approve="false">Decline</button>':'')+'</div>').join(""):'<p>No requests yet.</p>'):'<p>Owners have 24 hours to approve. Unanswered requests expire automatically.</p>');
+ (ownerMode?'<form id="pickupHoursForm"><h3>Pickup & return hours</h3><label>Time zone <select name="timezone" required><option value="America/New_York">Eastern</option><option value="America/Chicago">Central</option><option value="America/Denver">Mountain</option><option value="America/Phoenix">Arizona</option><option value="America/Los_Angeles">Pacific</option><option value="America/Anchorage">Alaska</option><option value="Pacific/Honolulu">Hawaii</option></select></label><label>Earliest time <input type="time" name="open" step="1800" required></label><label>Latest time <input type="time" name="close" step="1800" required></label><button type="submit" class="button button-primary">Save hours</button></form>':(!schedule?'<p>Owner has not set pickup hours yet. Booking is temporarily unavailable.</p>':'<p>Pickup and return hours: '+esc(schedule.open_time.slice(0,5))+'–'+esc(schedule.close_time.slice(0,5))+' ('+esc(schedule.timezone)+')</p>'))+
+ '<form id="bookingForm"><label>Pickup date <input type="date" name="start" required></label>'+(!ownerMode?'<label>Pickup time <select name="pickup" required></select></label>':'')+'<label>Return date <input type="date" name="end" required></label>'+(!ownerMode?'<label>Return time <select name="return" required></select></label>':'')+'<button class="button button-primary" type="submit" '+(!ownerMode&&!schedule?'disabled':'')+'>'+(ownerMode?"Block dates":"Request booking")+'</button></form>'+
+ (ownerMode?'<h3>Booking requests</h3>'+(requests.length?requests.map(x=>'<div class="booking-request"><p>'+esc(x.start_date)+' to '+esc(x.end_date)+(x.pickup_time?' ('+esc(x.pickup_time.slice(0,5))+'–'+esc(x.return_time?.slice(0,5))+' '+esc(x.booking_timezone)+')':'')+' · '+esc(x.status==="pending"&&new Date(x.expires_at)<=new Date()?"expired":x.status)+'</p>'+(x.status==="pending"&&new Date(x.expires_at)>new Date()?'<button data-respond="'+esc(x.id)+'" data-approve="true">Approve</button> <button data-respond="'+esc(x.id)+'" data-approve="false">Decline</button>':'')+'</div>').join(""):'<p>No requests yet.</p>'):'<p>Owners have 24 hours to approve. Unanswered requests expire automatically.</p>');
+ if(ownerMode){
+  const hours=body.querySelector("#pickupHoursForm");
+  hours.elements.timezone.value=schedule?.timezone||"America/New_York";
+  hours.elements.open.value=schedule?.open_time?.slice(0,5)||"08:00";
+  hours.elements.close.value=schedule?.close_time?.slice(0,5)||"18:00";
+  hours.addEventListener("submit",async e=>{
+   e.preventDefault();
+   const result=await client.rpc("set_listing_pickup_hours",{p_listing:id,p_timezone:hours.elements.timezone.value,p_open:hours.elements.open.value,p_close:hours.elements.close.value});
+   message.textContent=result.error?result.error.message:"Pickup hours saved.";
+   if(!result.error)await refresh();
+  });
+ }else if(schedule){
+  const times=[];
+  for(let h=0;h<24;h++)for(let m of [0,30]){
+   const t=String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+   if(t>=schedule.open_time.slice(0,5)&&t<=schedule.close_time.slice(0,5))times.push(t);
+  }
+  const options='<option value="">Choose a time</option>'+times.map(t=>'<option value="'+t+'">'+new Date("2000-01-01T"+t+":00").toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"})+'</option>').join("");
+  body.querySelector('[name="pickup"]').innerHTML=options;
+  body.querySelector('[name="return"]').innerHTML=options;
+ }
  const form=body.querySelector("#bookingForm");
  if(!ownerMode){
   const unavailable=(a.data||[]).map(x=>({start:x.start_date,end:x.end_date}));
@@ -72,7 +96,7 @@ async function refresh(){
  e.preventDefault();const start=form.elements.start.value,end=form.elements.end.value;
  if(!date(start)||!date(end)||end<=start){message.textContent="Return must be after pickup.";return;}
  const {data,error}=await client.auth.getUser();if(error||!data?.user){message.textContent="Please log in first.";return;}
- const result=await client.rpc(ownerMode?"block_listing_dates":"request_booking",{p_listing:id,p_start:start,p_end:end});
+ const result=await client.rpc(ownerMode?"block_listing_dates":"request_booking_timed",ownerMode?{p_listing:id,p_start:start,p_end:end}:{p_listing:id,p_start:start,p_end:end,p_pickup:form.elements.pickup.value,p_return:form.elements.return.value});
  message.textContent=result.error?result.error.message:ownerMode?"Dates blocked.":"Request submitted. Owner has 24 hours to respond.";
  if(!result.error)await refresh();
  });
