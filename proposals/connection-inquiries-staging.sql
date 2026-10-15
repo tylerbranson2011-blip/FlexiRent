@@ -42,6 +42,8 @@ begin
  if length(btrim(coalesce(p_subject,''))) not between 3 and 120
   or length(btrim(coalesce(p_message,''))) not between 10 and 2000
  then raise exception 'Invalid inquiry length'; end if;
+ -- Serialize concurrent inquiries from this account within the transaction.
+ perform pg_advisory_xact_lock(hashtextextended(v_user::text, 881920));
  if (select count(*) from public.connection_inquiries i
    where i.renter_id=v_user and i.created_at > now()-interval '1 hour') >= 5
  then raise exception 'Inquiry limit reached; try again later'; end if;
