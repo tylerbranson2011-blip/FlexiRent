@@ -143,6 +143,7 @@ async function openDetails(id){
 window.FlexiRentListing={open:openDetails};
 function closeDetails(){++detailRequest;modal.classList.add("hidden");document.body.style.overflow="";}
 document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDefault();selectedCategory="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p.dataset.category==="all"));runLocationSearch();});
+document.getElementById("visualCategoryGrid")?.addEventListener("click",e=>{const card=e.target.closest("[data-category]");if(!card)return;const pill=document.querySelector('#categoryPills .category-pill[data-category="'+card.dataset.category+'"]');if(pill){pill.click();document.getElementById("browse").scrollIntoView({behavior:"smooth",block:"start"});}});
 document.getElementById("categoryPills").addEventListener("click",e=>{const pill=e.target.closest("[data-category]");if(!pill)return;selectedCategory=pill.dataset.category;categorySelect.value="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p===pill));render();});
 categorySelect.addEventListener("change",()=>{selectedCategory="all";document.querySelectorAll(".category-pill").forEach(p=>p.classList.toggle("active",p.dataset.category==="all"));render();});
 distanceRadius.addEventListener("change",runLocationSearch);priceSelect.addEventListener("change",render);rateType.addEventListener("change",render);operatorFilter.addEventListener("change",render);sortSelect.addEventListener("change",render);
