@@ -10,11 +10,10 @@
   }
 
   const categories = [
-    ["car", "Cars"],
-    ["truck", "Trucks"],
     ["trailer", "Trailers"],
-    ["rv", "RVs & Campers"],
-    ["equipment", "Heavy Equipment"]
+    ["rv", "Campers"],
+    ["equipment", "Heavy Equipment"],
+    ["light_equipment", "Light Equipment"]
   ];
 
   const modal = document.createElement("div");
