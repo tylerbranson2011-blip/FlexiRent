@@ -69,7 +69,8 @@ area.addEventListener("click",async e=>{
  const rate=e.target.closest("[data-rate-booking]");if(rate){window.FlexiRentReviews?.open(rate.dataset.rateBooking,open);return;}
  const b=e.target.closest("[data-view-listing]");if(!b)return;
  if(!window.FlexiRentListing?.open){area.insertAdjacentHTML("afterbegin","<p>Listing details are unavailable. Refresh the page.</p>");return;}
- close();await window.FlexiRentListing.open(b.dataset.viewListing);
+ const opened=await window.FlexiRentListing.open(b.dataset.viewListing);
+ if(opened){close();}else{area.insertAdjacentHTML("afterbegin",`<p role="status">Could not open listing details. Please try again.</p>`);}
 });
 button.addEventListener("click",open);
 client.auth.onAuthStateChange((_event,session)=>{if(!session?.user)close();});
