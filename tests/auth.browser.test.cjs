@@ -9,9 +9,9 @@ const page=await browser.newPage({viewport:{width,height:800}});
 const errors=[];page.on("pageerror",e=>errors.push(e.message));
 await page.setContent('<!doctype html><html><head></head><body><button id="loginButton">Log In</button><button id="signupButton">Sign Up</button></body></html>');
 await page.evaluate(()=>{
- window.signups=[];
+ window.signups=[]; window.stripeCalls=[];
  const callbacks=[];
- window.supabaseClient={auth:{
+ window.supabaseClient={functions:{invoke:async(name)=>{window.stripeCalls.push(name);return {data:{error:"Identity verification is not configured yet"},error:null};}},auth:{
  signUp:async payload=>{window.signups.push(payload);return {data:{user:{id:"new-user",email:payload.email,user_metadata:payload.options.data},session:{access_token:"test"}},error:null}},
  signInWithPassword:async()=>({data:{user:{id:"existing",email:"existing@example.com",user_metadata:{account_type:"renter"}}},error:null}),
  updateUser:async ({data})=>({data:{user:{id:"new-user",email:"renter@example.com",email_confirmed_at:"2026-10-14T00:00:00Z",user_metadata:data}},error:null}),
@@ -35,7 +35,9 @@ if(type==="renter"){
  await page.locator("#signupButton").click();
  await page.locator("#becomeOwner").click();
  assert.equal(await page.locator("#signupButton").innerText(),"Owner Account");
- await page.getByText("Identity verification is not yet available",{exact:false}).waitFor();
+ await page.locator("#verifyIdentity").click();
+ await page.waitForFunction(()=>window.stripeCalls.includes("start-identity-verification"));
+ await page.getByText("Verification is not configured yet.",{exact:false}).waitFor();
  await page.locator(".auth-close").click();
 }
 await page.locator("#loginButton").click();
