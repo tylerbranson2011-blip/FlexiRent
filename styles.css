@@ -165,3 +165,12 @@ body {
 /* Search fields wrap cleanly as distance and operator filters grow. */
 .search-panel{grid-template-columns:repeat(3,minmax(0,1fr))}.search-panel .search-field{min-width:0}.search-panel .search-button{grid-column:1/-1}
 @media(max-width:780px){.search-panel{grid-template-columns:1fr}.search-panel .search-button{grid-column:auto}}
+
+/* Accessible header account menu and profile editor */
+.menu-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:42px;min-height:42px;border:1px solid #414a54;border-radius:9px}
+.account-menu[hidden]{display:none!important}
+.account-menu{position:fixed;right:clamp(12px,5vw,80px);top:108px;z-index:40;min-width:220px;max-width:calc(100vw - 24px);padding:8px;background:#1b1630;border:1px solid #42365e;border-radius:12px;box-shadow:0 14px 35px #0009}
+.account-menu button{display:block;width:100%;text-align:left;border:0;border-radius:7px;padding:13px;background:transparent;color:#f5f1ff}
+.account-menu button:hover,.account-menu button:focus-visible{background:#342b50}
+#settingsForm textarea{display:block;width:100%;padding:13px;background:#0d1014;color:white;border:1px solid #444b55;border-radius:9px;font:inherit}
+#settingsForm .button{margin-top:12px}
