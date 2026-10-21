@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+const html=readFileSync(new URL('../preview/index.html',import.meta.url),'utf8');
+const legal=readFileSync(new URL('../preview/legal.html',import.meta.url),'utf8');
+test('storefront has essential discovery controls',()=>{for(const id of ['browse','liveListingGrid','liveSearch','liveZip','liveRadius','liveCategory','liveMinPrice','liveMaxPrice'])assert.match(html,new RegExp('id="'+id+'"'))});
+test('homepage hides private sections',()=>{assert.match(html,/main > section:not\(\.hero\):not\(#browse\):not\(#how\)\{display:none!important\}/);assert.match(html,/id="accountPopup"/)});
+test('auth and account controls exist',()=>{for(const id of ['headerSignin','headerDashboard','headerSignout','signinCaptcha','dashboard'])assert.match(html,new RegExp('id="'+id+'"'))});
+test('review forms and separate admin inboxes exist',()=>{for(const id of ['platformFeedbackForm','peerReviewForm','adminPanel','adminMemberTab','adminWebsiteTab','adminReviewList'])assert.match(html,new RegExp('id="'+id+'"'))});
+test('admin authorization is checked server-side',()=>{assert.match(html,/rpc\/kavoltri_is_admin/);assert.match(html,/kvAdminAuthorized/);assert.match(html,/id="dashboardAdminAction"[^>]*hidden/)});
+test('subscription trial copy is 30 days',()=>{assert.match(html,/30-day free trial/);assert.match(legal,/30-day free trial/)});
+test('no production checkout enabled in preview',()=>{assert.match(html,/No subscription checkout is enabled in this test/)});
