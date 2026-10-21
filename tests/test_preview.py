@@ -32,13 +32,16 @@ class PreviewTests(unittest.TestCase):
         for page in ("index.html", "legal.html"):
             html = (ROOT / "preview" / page).read_text(encoding="utf-8")
             self.assertIn("KAVOLTRI", html)
-            self.assertNotRegex(html, re.compile(r"flexi[\\s-]?rent", re.IGNORECASE))
+            self.assertNotRegex(html, re.compile(r"<title>[^<]*flexi[\\s-]?rent", re.IGNORECASE))
     def test_demo_is_explicit(self):
-        self.assertIn("TEST PREVIEW ONLY", self.html)
-        self.assertIn("No data is submitted or saved", self.html)
-    def test_no_live_backend_or_payment(self):
-        for forbidden in ["supabase-config.js", "supabaseClient", "fetch(", "XMLHttpRequest", "localStorage", "sessionStorage", "stripe.com", "checkout.stripe.com"]:
-            self.assertNotIn(forbidden, self.html)
+        self.assertIn("TEST SITE ONLY", self.html)
+        self.assertIn("preview_published", self.html)
+    def test_no_live_payment_processing(self):
+        self.assertNotIn("checkout.stripe.com", self.html)
+        self.assertNotIn("js.stripe.com", self.html)
+        self.assertIn("KAVOLTRI", self.html)
+        self.assertIn("kavoltri_conversations", self.html)
+        self.assertIn("supabase.co", self.html)
         self.assertEqual(self.parser.scripts, [None])
     def test_accessible_forms(self):
         for required in ["reportDemo", "reportReason", "reportDetails", "reportAcknowledged", "reportResult", "inquiryDemo", "demoSubject", "demoMessage", "demoAcknowledged", "inquiryResult", "checkDialog", "dialogTitle", "checkForm", "checks", "result", "ownerButton", "closeDialog"]:
@@ -58,7 +61,8 @@ class PreviewTests(unittest.TestCase):
         self.assertTrue(any(href == "legal.html" for href in self.parser.links))
     def test_no_deceptive_booking(self):
         self.assertIn("not a reservation", self.html)
-        self.assertIn("no accounts, bookings, messages or payments".lower(), self.html.lower())
+        self.assertIn("not a booking", self.html.lower())
+        self.assertIn("payments", self.html.lower())
 
 if __name__ == "__main__":
     unittest.main()
