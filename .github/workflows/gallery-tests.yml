@@ -2,7 +2,7 @@ name: Gallery tests
 on:
   pull_request:
   push:
-    branches: [main, feature/photo-gallery-codex]
+    branches: [main, feature/photo-gallery-codex, feature/connection-hub-legal-2026-10-15]
 permissions:
   contents: read
 jobs:
