@@ -63,6 +63,127 @@ main > section:not(.hero):not(#browse):not(#how){display:none!important}
 #accountPopup section,#accountPopup #dashboard,#accountPopup #accounts,#accountPopup #notifications{display:block!important}
 #accountPopup [hidden]{display:none!important}
 #accountPopup #responsibility,#accountPopup #report-demo,#accountPopup #platformFeedback,#accountPopup #profileEditor,#accountPopup #publicProfile,#accountPopup #adminPanel,#accountPopup #listingDetails{display:block!important}
+
+/* KAVOLTRI preview dashboard button refresh - owner, renter and admin */
+#dashboard .dashboard-action-grid{gap:12px}
+#dashboard .dashboard-action{
+  --kv-accent:#ba8cff;
+  position:relative;overflow:hidden;isolation:isolate;
+  display:flex;align-items:center;gap:10px;
+  min-height:72px;padding:15px 14px 15px 18px;
+  border:1px solid #776089;border-radius:14px;
+  background:linear-gradient(120deg,#3e2c50,#22212a 86%);
+  color:#fff;text-align:left;font-weight:800;line-height:1.35;
+  box-shadow:0 5px 16px #0004,inset 0 1px #ffffff15;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+#dashboard .dashboard-action::before{
+  content:"";position:absolute;top:10px;bottom:10px;left:0;
+  width:4px;border-radius:0 5px 5px 0;background:var(--kv-accent);
+}
+#dashboard #dashboardAdminAction{--kv-accent:#cf9cff;background:linear-gradient(125deg,#4b326c,#272230)}
+#dashboard #dashboardProfileAction{--kv-accent:#4edbbe;background:linear-gradient(125deg,#22493f,#212a2b)}
+#dashboard #dashboardAccountAction{--kv-accent:#a6b3ff;background:linear-gradient(125deg,#343962,#242633)}
+#dashboard #dashboardOwnerAction{--kv-accent:#ffbc73;background:linear-gradient(125deg,#53402e,#292627)}
+#dashboard #dashboardReportAction{--kv-accent:#ff9ca7;background:linear-gradient(125deg,#522e3b,#2c2329)}
+#dashboard #dashboardHelpAction{--kv-accent:#86ceff;background:linear-gradient(125deg,#28475a,#212a31)}
+#dashboard #dashboardMessagesAction{--kv-accent:#ba92ff;background:linear-gradient(125deg,#45345f,#282432)}
+#dashboard #dashboardContactAction{--kv-accent:#75dfa0;background:linear-gradient(125deg,#284b3a,#222c29)}
+#dashboard #dashboardFeedbackAction{--kv-accent:#ffd987;background:linear-gradient(125deg,#51412d,#2a2824)}
+#dashboard #dashboardTermsAction{--kv-accent:#c4a4f5;background:linear-gradient(125deg,#403352,#25232d)}
+#dashboard .dashboard-action:hover:not(:disabled){
+  transform:translateY(-3px);border-color:var(--kv-accent);filter:brightness(1.08);
+  box-shadow:0 12px 24px #0007,inset 0 1px #ffffff20;
+}
+#dashboard .dashboard-action:active:not(:disabled){transform:translateY(0)}
+#dashboard .dashboard-action:focus-visible{outline:3px solid var(--kv-accent);outline-offset:3px}
+#dashboard .dashboard-action[hidden]{display:none!important}
+#dashboard .dashboard-panel button,
+#dashboard .owner-draft-actions button,
+#dashboard .owner-detail button,
+#dashboard .owner-toolbar button,
+#dashboard .owner-editor-heading button,
+#dashboard .owner-photo-card button,
+#dashboard #saveOwnerListing,
+#dashboard #uploadOwnerPhotos,
+#adminPanel button,
+#kavoltriMessages button,
+#kavoltriContact button,
+#profileEditor button,
+#platformFeedback button,
+#kavoltriInquiry button{
+  min-height:42px;padding:10px 14px;border-radius:10px;
+  font-weight:800;line-height:1.35;box-shadow:0 4px 12px #0004;
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease,border-color .18s ease;
+}
+#dashboard .dashboard-panel button:not(.secondary),
+#dashboard .owner-draft-actions button:not(.secondary),
+#dashboard .owner-detail button:not(.secondary),
+#dashboard .owner-toolbar button:not(.secondary),
+#dashboard .owner-photo-card button:not(.secondary),
+#dashboard #saveOwnerListing,
+#dashboard #uploadOwnerPhotos,
+#adminPanel button:not(.secondary),
+#kavoltriMessages button:not(.secondary),
+#kavoltriContact button:not(.secondary),
+#profileEditor button:not(.secondary),
+#platformFeedback button:not(.secondary),
+#kavoltriInquiry button:not(.secondary){
+  background:linear-gradient(135deg,#ae72fa,#7946c6);
+  border:1px solid #cc9dff;color:#fff;
+}
+#dashboard button.secondary,
+#adminPanel button.secondary,
+#kavoltriMessages button.secondary,
+#kavoltriContact button.secondary,
+#profileEditor button.secondary{
+  background:linear-gradient(135deg,#352a45,#24222e);
+  border:1px solid #7f6b94;color:#f9f5ff;
+}
+#dashboard button:hover:not(:disabled),
+#adminPanel button:hover:not(:disabled),
+#kavoltriMessages button:hover:not(:disabled),
+#kavoltriContact button:hover:not(:disabled),
+#profileEditor button:hover:not(:disabled),
+#platformFeedback button:hover:not(:disabled),
+#kavoltriInquiry button:hover:not(:disabled){
+  transform:translateY(-2px);filter:brightness(1.1);box-shadow:0 8px 18px #0006;
+}
+#dashboard button:focus-visible,
+#adminPanel button:focus-visible,
+#kavoltriMessages button:focus-visible,
+#kavoltriContact button:focus-visible,
+#profileEditor button:focus-visible,
+#platformFeedback button:focus-visible,
+#kavoltriInquiry button:focus-visible{outline:3px solid #d3aeff;outline-offset:3px}
+#adminPanel .role-tabs{gap:10px;margin:15px 0}
+#adminPanel .role-tabs button{
+  flex:1 1 145px;background:linear-gradient(135deg,#46325f,#272432);
+  border:1px solid #9376b4;color:#faf7ff;white-space:normal;
+}
+#adminPanel .role-tabs button[aria-pressed="true"]{
+  background:linear-gradient(135deg,#b77cff,#7649c9);border-color:#e1bbff;color:#fff;
+}
+#adminPanel #adminReload{
+  background:linear-gradient(135deg,#224d4b,#243238);
+  border:1px solid #5eaca5;color:#e5fffb;
+}
+@media(max-width:540px){
+  #dashboard .dashboard-action-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  #dashboard .dashboard-action{min-width:0;min-height:78px;padding:12px 10px 12px 14px;font-size:.82rem;white-space:normal}
+  #adminPanel .role-tabs button{flex:1 1 120px}
+}
+@media(prefers-reduced-motion:reduce){
+  #dashboard .dashboard-action,
+  #dashboard button,
+  #adminPanel button,
+  #kavoltriMessages button,
+  #kavoltriContact button,
+  #profileEditor button,
+  #platformFeedback button,
+  #kavoltriInquiry button{transition:none}
+}
+
 </style></head><body>
 <div class="flag">TEST SITE · PRIVATE PREVIEW LISTINGS AND MESSAGING · NOT PUBLIC RENTALS</div>
 <header><div class="brand">KAVOL<span style="color:#ff7518">TRI</span></div><nav><a href="#browse">Browse gear</a><a href="#how">How it works</a><a href="legal.html">Safety &amp; terms</a></nav><div class="quick-nav"><button type="button" class="secondary" id="headerSignin">Sign in</button><button type="button" class="secondary" id="headerDashboard" hidden>Dashboard</button><button type="button" class="secondary" id="headerSignout" hidden>Log out</button><button type="button" class="secondary" id="headerNotifications" hidden>Notifications <span id="notificationBadge" class="notice-count" hidden>0</span></button></div></header>
