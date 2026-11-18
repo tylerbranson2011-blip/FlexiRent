@@ -37,3 +37,27 @@ test('published listing shows photos and complete details',async({page})=>{
  await page.getByRole('button',{name:'Show listing photo 2'}).click();
  await expect(page.locator('#listingDetailsPhotos .owner-detail-hero')).toHaveAttribute('src','https://photos.test/side.jpg');
 });
+
+
+test('dashboard opens as popup and stays off homepage after closing',async({page})=>{
+ await page.addInitScript(()=>{
+   sessionStorage.setItem('kavoltri_preview_session',JSON.stringify({
+     access_token:'test-session-for-ui-only',
+     expires_at:Math.floor(Date.now()/1000)+3600
+   }));
+ });
+ await page.goto('/');
+ await expect(page.locator('#headerDashboard')).toBeVisible();
+ await expect(page.locator('#dashboard')).toBeHidden();
+ await page.locator('#headerDashboard').click();
+ await expect(page.locator('#accountPopup')).toBeVisible();
+ await expect(page.locator('#accountPopup #dashboard')).toBeVisible();
+ await expect(page.locator('#dashboardProfileAction')).toBeVisible();
+ await page.locator('#popupClose').click();
+ await expect(page.locator('#accountPopup')).toBeHidden();
+ await expect(page.locator('main #dashboard')).toBeHidden();
+ await page.locator('#headerDashboard').click();
+ await expect(page.locator('#accountPopup #dashboard')).toBeVisible();
+ await page.locator('#popupClose').click();
+ await expect(page.locator('main #dashboard')).toBeHidden();
+});
