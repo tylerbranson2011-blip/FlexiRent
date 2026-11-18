@@ -85,7 +85,7 @@ function database() {
   const queries = []; const pending = []; const callbacks = [];
   let delay = false;
   const listings = [
-    { id: "public", title: "Published", status: "published", owner_id: "owner", price_per_day: 40, image_url: "https://test/0" },
+    { id: "public", title: "Published", status: "published", category: "trailer", owner_id: "owner", price_per_day: 40, image_url: "https://test/0" },
     { id: "draft", title: "Private", status: "draft", owner_id: "owner", price_per_day: 40 },
     { id: "other", title: "Other owner", status: "draft", owner_id: "other", price_per_day: 40 }
   ];

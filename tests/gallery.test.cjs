@@ -8,7 +8,7 @@ const { chromium } = require("playwright");
 function mockSupabase() {
   const photo = (listing_id, position) => ({ listing_id, position, image_url: `https://photos.test/${listing_id}-${position}.png` });
   const item = (id, status, owner_id = "owner", image_url = `https://photos.test/${id}-0.png`) => ({
-    id, status, owner_id, image_url, title: `Rental ${id}`, category: "truck", city: "Louisville", state: "KY",
+    id, status, owner_id, image_url, title: `Rental ${id}`, category: "trailer", city: "Louisville", state: "KY",
     price_per_day: 40, description: "Test rental", created_at: id
   });
   window.testDB = {

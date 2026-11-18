@@ -68,10 +68,10 @@ async function openDetails(id){
 
       <div class="detail-actions">
         <button class="button button-primary" id="demoBook">
-          Booking coming soon
+          Contact owner (not yet available)
         </button>
         <button class="button button-ghost" id="demoContact">
-          Messaging coming soon
+          Read renter responsibilities
         </button>
       </div>
     </div>
@@ -80,8 +80,8 @@ async function openDetails(id){
   window.FlexiRentGallery.mount(gallery,{title:item.title,cover:item.image});
   modal.classList.remove("hidden");
   document.body.style.overflow = "hidden";
-  document.getElementById("demoBook").addEventListener("click",()=>showToast("Booking isn't connected yet. Next step: add accounts and a real booking database."));
- document.getElementById("demoContact").addEventListener("click",()=>showToast("Owner messaging isn't connected yet. We'll add it after account setup."));
+  document.getElementById("demoBook").addEventListener("click",()=>showToast("Owner inquiries are not active yet. The connection-only platform is undergoing safety review."));
+ document.getElementById("demoContact").addEventListener("click",()=>showToast("Read the renter responsibilities at legal.html#renter before contacting an owner."));
  try {
   const {data:photos,error}=await window.supabaseClient.from("listing_photos").select("image_url,position").eq("listing_id",item.id).order("position",{ascending:true});
   if(request!==detailRequest)return;
@@ -125,7 +125,7 @@ async function loadRealListings() {
     return;
   }
 
-  listings = (data || []).map(item => ({
+  listings = (data || []).filter(item => ["trailer", "rv", "equipment"].includes(item.category)).map(item => ({
     id: item.id,
     title: item.title || "Untitled rental",
     category: item.category || "equipment",
@@ -135,7 +135,7 @@ async function loadRealListings() {
     period: "day",
     seats: "Details available",
     transmission: "Ask owner",
-    badge: "AVAILABLE",
+    badge: "OWNER-POSTED",
     image: item.image_url || "",
     description: item.description || "No description provided."
   }));

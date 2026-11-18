@@ -199,6 +199,8 @@ ${item.status === "published" ? `
   }
 
   async function publishListing(id) {
+    alert("Publishing is temporarily paused for the connection-only redesign. Owner consent must be recorded and verified by the server before listings can go live.");
+    return;
     const { data: authData, error: authError } =
       await client.auth.getUser();
 
